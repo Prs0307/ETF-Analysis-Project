@@ -4,9 +4,18 @@ import csv
 from io import StringIO
 import datetime 
 
-def validate_date():...
+def is_valid_day():
+    current_day = datetime.now().weekday()
+    if current_day == 5 or current_day == 6:
+        return True  # Market is closed
+    else:
+        return False
 
 def download_and_save_csv():
+    #first we will check if the date is valid to fetch data
+    if not is_valid_day():
+        return "market is close  today"
+    
     date=str(datetime.datetime.now()).split(" ")[0].split("-")[::-1]
     date="".join(date)
 
