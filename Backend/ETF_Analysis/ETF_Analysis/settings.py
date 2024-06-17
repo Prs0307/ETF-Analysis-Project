@@ -11,6 +11,16 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+import json
+
+
+with open('.env.json') as f:
+    env_vars = json.load(f)
+
+# Override OS environment variables with those from .env.json
+os.environ.update(env_vars)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,10 +30,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-u7g_^6*b(f5n8brc70l&)t006#=+8hnq8ec!t(i^x8v0xs*1)0'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', default=True)
 
 ALLOWED_HOSTS = []
 
@@ -37,8 +47,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'etf_listing'
+    'rest_framework'
+    
 ]
+
+MY_APPS=[
+    "account_services",
+    "ETF_services",
+    "utils"
+]
+
+INSTALLED_APPS=INSTALLED_APPS+MY_APPS
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -73,11 +93,22 @@ WSGI_APPLICATION = 'ETF_Analysis.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+# user=postgres.nrdwxtdrqdmoubystwgn password=[YOUR-PASSWORD] host=aws-0-ap-south-1.pooler.supabase.com port=6543 dbname=postgres
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',  # 'postgresql_psycopg2' also works for older versions
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USER'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DATABASE_HOST'), # Or your database server's IP address
+        'PORT': os.environ.get('DATABASE_PORT'),# Or your database server's port
     }
 }
 
