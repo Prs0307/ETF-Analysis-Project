@@ -148,7 +148,6 @@ def download_and_save_csv(etfname,csv_url,date):
         data=convert_json_to_df(selected_rows)
         data['etfname']=etfname
         data['date']=date
-     
         return data
 
      

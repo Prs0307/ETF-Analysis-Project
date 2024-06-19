@@ -1,11 +1,11 @@
 
 from django.shortcuts import render
 from rest_framework.response import Response
-from utils.functions import *
+from Backend.ETF_Analysis.utils.db_functions import *
 from rest_framework.views import APIView
 from rest_framework.status import HTTP_200_OK,HTTP_201_CREATED,HTTP_400_BAD_REQUEST
 from rest_framework.generics import ListAPIView
-from utils.functions import fetch_data_from_fund
+from Backend.ETF_Analysis.utils.db_functions import fetch_data_from_fund
 
 class Update_funds(APIView):
     def post(self,request,format=None):
