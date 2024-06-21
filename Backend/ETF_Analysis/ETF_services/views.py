@@ -12,11 +12,45 @@ from django.http import HttpResponse
 from django.db import transaction, IntegrityError
 from .serializers import *
 from django.http import Http404
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 
 
-class EtfStocksListCreate(APIView):
+class EtfStocksListCreate(ListAPIView):
+    """This view use for bulk updating daily stock data and getting list of stocks"""
+    
+    filter_backends = [DjangoFilterBackend]
+    serializer_class =  ETFHoldingSerializer
+    filterset_fields= {
+            "ticker": ["exact", "icontains"],
+            "name": ["exact", "icontains"],
+            "sector": ["exact", "icontains"],
+            "asset_class": ["exact", "icontains"],
+            "market_value": ["exact", "gte", "lte"],
+            "weight": ["exact", "gte", "lte"],
+            "notional_value": ["exact", "gte", "lte"],
+            "shares": ["exact", "gte", "lte"],
+            "price": ["exact", "gte", "lte"],
+            "location": ["exact", "icontains"],
+            "exchange": ["exact", "icontains"],
+            "currency": ["exact"],
+            "fx_rate": ["exact", "gte", "lte"],
+            "market_currency": ["exact"],
+            "etfname": ["exact", "icontains"],
+            "date": ["exact", "gte", "lte"],
+            "fund_house": ["exact", "icontains"]
+        }
+    
+
+    def get_queryset(self):
+        return ETF_holdings.objects.all()
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
     def post(self,request,format=None):
         try:
             start_date=request.data.get("start_date",None)
@@ -25,12 +59,32 @@ class EtfStocksListCreate(APIView):
             fund_house=request.data.get("fund_house",None)
             
             fetch_data_from_fund(start_date,end_date,fund_house,etfs)
-            return Response({"success":True})
+            return Response({"success":True,"message":"stocks updated"})
         except Exception as e:
             
             return Response({"success":False,"message":str(e)})
         
+class EtfStocksDetail(APIView):
+    def get_object(self,pk):
+        try:
+            return ETF_holdings.objects.get(pk=pk)
+        except ETF_holdings.DoesNotExist:
+            raise Http404("holding not found")
         
+    def get(self,request,pk):
+        inst=self.get_object(pk)
+        serializer=ETFHoldingSerializer(inst)
+        return Response(serializer.data)
+    
+    
+    def put():...
+    def delete(self,request,pk):
+        
+        # count=list(ETF_holdings.objects.all())
+        # return Response({"count":len(count)})
+    
+        ETF_holdings.objects.all().delete()
+        return Response({"success":True,"message":"deleted"})
     
 
 class ETFBulk(APIView):

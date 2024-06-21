@@ -18,12 +18,16 @@ Including another URLconf
 from django.urls import path
 from .views import *
 urlpatterns = [
-    path('update-etfstocks/',EtfStocksListCreate.as_view() ),
+    path('etf-stocks/',EtfStocksListCreate.as_view() ),
+     path('etf-stocks/<pk>/',EtfStocksDetail.as_view() ),
     path('etf-bulk-update/',ETFBulk.as_view()),
     path('etf/',ETFListCreate.as_view()),
     path('etf/<pk>/',ETFDetail.as_view()),
     path('fundhouse/',FundhouseListCreate.as_view()),
     path('fundhouse/<pk>/',FundhouseDetail.as_view()),
+    
+    
+    
      
     
     

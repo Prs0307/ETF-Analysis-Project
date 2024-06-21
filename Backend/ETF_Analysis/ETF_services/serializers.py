@@ -10,4 +10,10 @@ class FundhouseSerializer(ModelSerializer):
     class Meta:
         model=Fundhouse
         fields="__all__"
+    
+class ETFHoldingSerializer(ModelSerializer):
+    class Meta:
+        model=ETF_holdings
+        fields="__all__"
+    
         
