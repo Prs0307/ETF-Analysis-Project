@@ -1,11 +1,19 @@
 from datetime import datetime,timedelta
-
-def is_valid_etfs(etfs):
-    valid_etfs=[]
-    for etf in etfs:
-        # print(etf)
+from ETF_services.models import ETF
+def validate_etfs(etfs):
+    etf_list= ETF.objects.values_list('etf_shortname', flat=True)
+    
+    if etfs==None:
+        if len(etf_list<20):
+            return etf_list
+        else :
+            return etf_list[:20]
         
-        if etf in  list(ishare_df['ticker']):
+    valid_etfs=[]
+    
+    for etf in etfs:
+        
+        if etf in  etf_list:
             print('valid etf found ',etf)
             valid_etfs.append(etf)
     return valid_etfs
@@ -13,19 +21,15 @@ def is_valid_etfs(etfs):
 
 
 def is_valid_date(startdate,enddate):
-    err=""
     try:
         # Parse dates with flexible formatting for single-digit days/months
         start_date = datetime.strptime(startdate, "%Y/%m/%d")
         end_date = datetime.strptime(enddate, "%Y/%m/%d")
-    except ValueError:
-         err="Format Error"
-         return False,err  # Handle invalid date format
+    except Exception as e:
+        print(e)
+        return False
 
-    # Check if start date is less than or equal to end date
-    if((start_date <= end_date)==False):
-       err='"Start Date must be less than or  equal to end date"'
-    return start_date <= end_date,err
+    return start_date <= end_date,
 
 
 def valid_dates_(start_date,end_date):
@@ -50,4 +54,10 @@ def valid_dates_(start_date,end_date):
 
     
 
+def str_to_int(s):
+    if isinstance(s, str):
+        raw_num=s.replace(',','')
     
+        return float(raw_num)
+    else:
+        return s

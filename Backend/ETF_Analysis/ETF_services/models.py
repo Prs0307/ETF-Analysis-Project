@@ -21,7 +21,7 @@ class ETF_holdings(models.Model):
     accrual_date = models.DateField(null=True, blank=True)
     etfname = models.CharField(max_length=255, null=True, blank=True)
     date = models.DateField(blank=True,null=True)
-    firm=models.CharField(max_length=100,blank=True,null=True)
+    fund_house=models.CharField(max_length=100,blank=True,null=True)
 
     def __str__(self):
         return f'{self.ticker} - {self.date}'
@@ -29,6 +29,14 @@ class ETF_holdings(models.Model):
     class Meta:
         db_table="ETF_holdings"
 
+class Fundhouse(models.Model):
+    name=models.CharField(max_length=100,null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, editable=False)
+    
+    class Meta:
+         db_table="Fundhouse"
+    
 class Stock(models.Model):
     stock_name=models.CharField(max_length=100)
     stock_shortname=models.CharField(max_length=100)
@@ -39,9 +47,9 @@ class ETF(models.Model):
     etf_name=models.CharField(max_length=100)
     etf_shortname=models.CharField(max_length=30)
     etf_link=models.CharField(max_length=100)
+    fund_house=models.ForeignKey(Fundhouse,related_name="Etfs",null=True,blank=True,on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
-    stocks=models.ManyToManyField(to=Stock)
     
     class Meta:
          db_table="ETF"
@@ -49,6 +57,7 @@ class ETF(models.Model):
 class AvailabilityDate(models.Model):
     date=models.DateField(blank=True,null=True)
     is_available=models.BooleanField(default=False)
+    fund_house=models.CharField(max_length=100,null=True,blank=True)
     
     class Meta:
         db_table="AvailabilityDate"

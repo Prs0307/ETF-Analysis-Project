@@ -1,52 +1,35 @@
-# import requests 
-# import pandas as pd
-# import numpy as np
-# import os
-# import requests
-# from bs4 import BeautifulSoup
+import requests 
+import pandas as pd
+import numpy as np
+import os
+import requests
+from bs4 import BeautifulSoup
 import re
 from datetime import datetime
 import csv
 from io import StringIO
-from .validators import *
-
-df_column_names = [
-    "ticker",
-    "name",
-    "sector",
-    "asset_class",
-    "market_value",
-    "weight",
-    "notional_value",
-    "shares",
-    "price",
-    "location",
-    "exchange",
-    "currency",
-    "fx_rate",
-    "market_currency",
-    "accrual_date",
-    "etfname",
-    "date",
-]
+from utils.validators import *
+from utils.constants import ISHARE_BASE_URL,ISHARE_DF_COLUMNS
+from django.http import Http404
 
 
 
-def fetch_data_from_fund(start_date,end_date,firm,etfs=None):
+def fetch_data_from_Ishare(start_date,end_date,fund_house,etfs=None):
     """
-    function:its fetch the data of etf from url
+    function:its fetch the data of Ishare etfs from LINKS
     """
-    return "true"
-    BASE_URL='https://www.ishares.com/'
-    valid_date,err= is_valid_date(start_date,end_date)
-    if(err):
-        print(err)
-        return
-    valid_etfs=is_valid_etfs(etfs)
+  
+    if not is_valid_date(start_date,end_date):
+        raise Http404("invalid dates")
+        
+
+    valid_etfs=validate_etfs(etfs)
     if not valid_etfs:
-        return " error : ETFs not found in our database"
-    # print( "valid Etfs are "+str(valid_etfs))
-    main_data_frame=pd.DataFrame({},columns=df_column_names)
+        Http404("etfs not found")
+    
+    return None
+   
+    main_data_frame=pd.DataFrame({},columns=ISHARE_DF_COLUMNS)
 
 
     input_dates=valid_dates_(start_date,end_date)
@@ -188,4 +171,22 @@ def fetch_csv_url_from_web(webpage_url):
 
 def clean_dataframe(single_etf_dataframe):
     """takes single etf dataframe as input and clean it and return it """
+    
+    
+        # remove  Empty rows
+    df = df.dropna(how='all')  
+    # function to convert string values to numbers
+    list_of_col=['market_value' , 'weight', 'notional_value' ,'shares',	'price'	,'fx_rate']
+    for col_name in (list_of_col):
+        df[col_name]=df[col_name].apply(str_to_int)
+        df[col_name]=df[col_name].astype("float64")
+    # function to convert datetime values to datetime objects
+
+    df['date'] = pd.to_datetime(df['date'], format='%Y%M%d').dt.date
+
+        
+    # print(df.head)
+    # print(df['date'])
+    return df
+    
     return None
