@@ -20,15 +20,16 @@ class EtfStocksListCreate(APIView):
     def post(self,request,format=None):
         try:
             start_date=request.data.get("start_date",None)
-            end_date=request.data.get("start_date",start_date)
+            end_date=request.data.get("end_date",start_date)
             etfs=request.data.get("etfs",None)
             fund_house=request.data.get("fund_house",None)
             
-            msg=fetch_data_from_fund(start_date,end_date,fund_house,etfs)
+            fetch_data_from_fund(start_date,end_date,fund_house,etfs)
             return Response({"success":True})
         except Exception as e:
-            print(e)
-            return Response({})
+            
+            return Response({"success":False,"message":str(e)})
+        
         
     
 

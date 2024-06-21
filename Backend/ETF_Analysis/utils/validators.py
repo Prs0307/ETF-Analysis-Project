@@ -1,10 +1,14 @@
 from datetime import datetime,timedelta
 from ETF_services.models import ETF
+from utils.functions.db_queries import get_etf_list
+
+
 def validate_etfs(etfs):
-    etf_list= ETF.objects.values_list('etf_shortname', flat=True)
+    etf_list= get_etf_list()
     
-    if etfs==None:
-        if len(etf_list<20):
+    
+    if not etfs.split(","):
+        if len((etf_list))<20:
             return etf_list
         else :
             return etf_list[:20]
@@ -26,8 +30,11 @@ def is_valid_date(startdate,enddate):
         start_date = datetime.strptime(startdate, "%Y/%m/%d")
         end_date = datetime.strptime(enddate, "%Y/%m/%d")
     except Exception as e:
+        print("------dates are invalid-----")
         print(e)
         return False
+    
+    
 
     return start_date <= end_date,
 
