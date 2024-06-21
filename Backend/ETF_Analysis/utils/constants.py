@@ -18,4 +18,5 @@ ISHARE_DF_COLUMNS = [
     "accrual_date",
     "etfname",
     "date",
+    "fund_house"
 ]
