@@ -56,8 +56,14 @@ class ETF(models.Model):
 
 class AvailabilityDate(models.Model):
     date=models.DateField(blank=True,null=True)
-    is_available=models.BooleanField(default=False)
+    is_updated=models.BooleanField(default=False)
     fund_house=models.CharField(max_length=100,null=True,blank=True)
+    pending_updates=models.TextField(null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, editable=False)
+    
+    
+    
     
     class Meta:
         db_table="AvailabilityDate"

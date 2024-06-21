@@ -11,7 +11,7 @@ from io import StringIO
 from utils.validators import *
 from utils.constants import ISHARE_BASE_URL,ISHARE_DF_COLUMNS
 from django.http import Http404
-
+from utils.functions.db_queries import *
 
 
 def fetch_data_from_Ishare(start_date,end_date,fund_house,etfs=None):
@@ -20,66 +20,76 @@ def fetch_data_from_Ishare(start_date,end_date,fund_house,etfs=None):
     """
   
     if not is_valid_date(start_date,end_date):
-        raise Http404("invalid dates")
+        raise Exception("invalid dates format")
         
 
     valid_etfs=validate_etfs(etfs)
     if not valid_etfs:
-        Http404("etfs not found")
+        raise Exception("etfs not found")
+    print("valid etfs are",valid_etfs)
     
-    return None
-   
-    main_data_frame=pd.DataFrame({},columns=ISHARE_DF_COLUMNS)
-
+    
 
     input_dates=valid_dates_(start_date,end_date)
-
+    pending_etfs=[]
     
     for date in input_dates:
         # For Perticuler Ticker [ETF] we need to check for its data from link available or not
 
         for etf in valid_etfs:
-            curr_etf_link=ishare_df[ishare_df['ticker']==etf]['link'].values[0]
+            curr_etf_link=get_etf_link(etf)
             
-            try:
-                curr_csv_url=BASE_URL+fetch_csv_url_from_web(curr_etf_link)+'&asOfDate='+date
-                print(curr_csv_url)
-                data_frame=download_and_save_csv(etf,curr_csv_url,date)
-                print("new data frame",data_frame)
-                # print("main_data",main_data_frame.head())
-                # print("curr_df",data_frame.head())
-                if data_frame.shape[0]>0:
-                    main_data_frame= pd.concat([main_data_frame,data_frame],ignore_index=True)
-
-
-                # print("data saved for ETF : {}  and date : {}",format(etf,date))
-            except Exception as e:
-                print(e)
-                return "Data is not available for this period..."
+            if curr_etf_link=="" or " " or None:
+                pending_etfs.append(etf)
+                continue
+            
+            current_csv_url=ISHARE_BASE_URL+fetch_csv_url_from_web(curr_etf_link)+'&asOfDate='+date
+            if not current_csv_url:
+                pending_etfs.append(etf)
+                continue
+            
+            current_dataframe=download_and_save_csv(etf,current_csv_url,date,fund_house)
+            
+            if not current_dataframe:
+                pending_etfs.append(etf)
+                continue
+               
+            if current_dataframe.shape[0]<0:
+                pending_etfs.append(etf)
+                continue
+            
+            
+            #saving current dataframe in db
+            
+            clean_dataframe=cleaned_dataframe(current_dataframe)
+            
+            if clean_dataframe.shape[0]==0:
+                pending_etfs.append(etf)
+                continue
+            
+            
+            #saving dataframe in databse
+            add_EtfStocks_in_DB(clean_dataframe)
+            
+                
+                
             
 
+              
 
-            
-
-        # print(str(curr_etf_link))
-    if(main_data_frame.shape[0]==0):
-        return "No data for this period"
-    else:
-        main_data_frame.to_csv(f'ETF_{etfs[0]}.csv')
-    return "Data Saved For this period"
+    
   
 
 
 def convert_json_to_df(data):
     """function: this function takes the list of dictionaries(eg. [{},{},{}]) as input and create dataframe from it and return it """
     final_array=[]
-    print("len of data",len(data))
-    
+  
+    #iterating each row
     for json_data in data:
         try:
             keys=list(json_data.keys())
             if len(keys)==2 and len(json_data[None])>10 :
-                print(json_data)
                 ticker=json_data[keys[0]] or None
                 name=json_data[keys[1]][0] or None
                 sector=json_data[keys[1]][1] or None
@@ -99,21 +109,25 @@ def convert_json_to_df(data):
                 final_array.append([ticker,name,sector,asset_class,market_value,weight,notional_value,shares,price,location,exchange,currency,fx_rate,market_currency ,accrual_date])
 
             else:
-                return pd.DataFrame(final_array,columns=df_column_names)
+                return None
         except Exception as e:
             print("error in convert json",json_data)
-            return pd.DataFrame({},columns=df_column_names)
+            return None
         
-    return pd.DataFrame(final_array,columns=df_column_names)
+    return pd.DataFrame(final_array,columns=ISHARE_DF_COLUMNS[-3:])
 
 
 
-def download_and_save_csv(etfname,csv_url,date):
+def download_and_save_csv(etfname,csv_url,date,fund_house):
     """function: it takes csv url as input and fetch the data from csv"""
-   
-    response = requests.get(csv_url)
-    csv_file = StringIO(response.text)
-    reader = csv.DictReader(csv_file)
+    try:
+        response = requests.get(csv_url)
+        csv_file = StringIO(response.text)
+        reader = csv.DictReader(csv_file)
+    
+    except Exception as e:
+       print("exception in downloa d and csave",e)
+       return None
 
    
 
@@ -126,18 +140,20 @@ def download_and_save_csv(etfname,csv_url,date):
             selected_rows.append(row)
 
     if selected_rows:
-      
+        dataframe=convert_json_to_df(selected_rows)
+        if dataframe:
+            dataframe['etfname']=etfname
+            dataframe['date']=date
+            dataframe["fund_house"]=fund_house
+            return dataframe
+            
         
-        data=convert_json_to_df(selected_rows)
-        data['etfname']=etfname
-        data['date']=date
-        return data
+        
 
      
         
     else:
-        print("not available")
-        return pd.DataFrame({},columns=df_column_names)
+        return None
     
     
 def fetch_csv_url_from_web(webpage_url):
@@ -169,9 +185,8 @@ def fetch_csv_url_from_web(webpage_url):
 
 
 
-def clean_dataframe(single_etf_dataframe):
+def cleaned_dataframe(main_dataframe):
     """takes single etf dataframe as input and clean it and return it """
-    
     
         # remove  Empty rows
     df = df.dropna(how='all')  
@@ -189,4 +204,4 @@ def clean_dataframe(single_etf_dataframe):
     # print(df['date'])
     return df
     
-    return None
+    
