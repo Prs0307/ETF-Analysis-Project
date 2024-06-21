@@ -16,10 +16,16 @@ Including another URLconf
 """
 
 from django.urls import path
-from .APIs import *
+from .views import *
 urlpatterns = [
-   
-    path('update-funds/',Update_funds.as_view() ),
+    path('update-etfstocks/',EtfStocksListCreate.as_view() ),
+    path('etf-bulk-update/',ETFBulk.as_view()),
+    path('etf/',ETFListCreate.as_view()),
+    path('etf/<pk>/',ETFDetail.as_view()),
+    path('fundhouse/',FundhouseListCreate.as_view()),
+    path('fundhouse/<pk>/',FundhouseDetail.as_view()),
+     
+    
     
    
 
