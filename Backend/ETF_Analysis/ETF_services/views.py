@@ -12,45 +12,11 @@ from django.http import HttpResponse
 from django.db import transaction, IntegrityError
 from .serializers import *
 from django.http import Http404
-from django_filters.rest_framework import DjangoFilterBackend
-import pandas as pd
 
 
 
-class EtfStocksListCreate(ListAPIView):
-    """This view use for bulk updating daily stock data and getting list of stocks"""
-    
-    filter_backends = [DjangoFilterBackend]
-    serializer_class =  ETFHoldingSerializer
-    filterset_fields= {
-            "ticker": ["exact", "icontains"],
-            "name": ["exact", "icontains"],
-            "sector": ["exact", "icontains"],
-            "asset_class": ["exact", "icontains"],
-            "market_value": ["exact", "gte", "lte"],
-            "weight": ["exact", "gte", "lte"],
-            "notional_value": ["exact", "gte", "lte"],
-            "shares": ["exact", "gte", "lte"],
-            "price": ["exact", "gte", "lte"],
-            "location": ["exact", "icontains"],
-            "exchange": ["exact", "icontains"],
-            "currency": ["exact"],
-            "fx_rate": ["exact", "gte", "lte"],
-            "market_currency": ["exact"],
-            "etfname": ["exact", "icontains"],
-            "date": ["exact", "gte", "lte"],
-            "fund_house": ["exact", "icontains"]
-        }
-    
 
-    def get_queryset(self):
-        return ETF_holdings.objects.all()
-    
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
+class EtfStocksListCreate(APIView):
     def post(self,request,format=None):
         try:
             start_date=request.data.get("start_date",None)
@@ -59,42 +25,15 @@ class EtfStocksListCreate(ListAPIView):
             fund_house=request.data.get("fund_house",None)
             
             fetch_data_from_fund(start_date,end_date,fund_house,etfs)
-            return Response({"success":True,"message":"stocks updated"})
+            return Response({"success":True})
         except Exception as e:
             
             return Response({"success":False,"message":str(e)})
         
-class EtfStocksDetail(APIView):
-    def get_object(self,pk):
-        try:
-            return ETF_holdings.objects.get(pk=pk)
-        except ETF_holdings.DoesNotExist:
-            raise Http404("holding not found")
         
-    def get(self,request,pk):
-        inst=self.get_object(pk)
-        serializer=ETFHoldingSerializer(inst)
-        return Response(serializer.data)
-    
-    
-    def put(self,request,pk):
-        pass
-    def delete(self,request,pk):
-        
-        # inst=self.get_object(pk)
-        # inst.delete()
-        # return Response({"success":True,"message":"successfully deleted"})
-    
-        ETF_holdings.objects.all().delete()
-        return Response({"success":True,"message":"deleted"})
     
 
 class ETFBulk(APIView):
-    
-    """this api is for adding etf list of different fundhouses,
-    It takes csv file as input,please make sure that column names
-    of csv file must be synchronous with db table"""
-    
     def post(self,request):
        
         csv_file = request.FILES.get("file",None)
@@ -154,17 +93,11 @@ class ETFBulk(APIView):
         return Response({"success":True,"message":"data added successfully"})
     
 class ETFListCreate(ListAPIView):
-    
-    """this api is for listing all etfs details and also to add etf details seperatly"""
-    
     queryset = ETF.objects.all()
     serializer_class = ETFSerializer
-
+    
     
 class ETFDetail(APIView) :
-    
-    """this api takes pk for identifying the etf and perform operation on it"""
-    
     def get_object(self,pk):
         try:
             return ETF.objects.get(pk=pk)
@@ -186,12 +119,15 @@ class ETFDetail(APIView) :
             return Response(serializer.errors)
             
         
+        
     def delete(self,request,pk):
         ETF.objects.all().delete()
         return Response({"success":"true","message":"bulk deleted"})
     
+    
+    
+    
 class FundhouseListCreate(APIView):
-    """Fund house list and create api"""
     
     def get_queryset(self):
         queryset =  Fundhouse.objects.filter().order_by('-id')
@@ -218,8 +154,6 @@ class FundhouseListCreate(APIView):
         
         return Response({"success":False,"message":"all fields are necessary"})
 class FundhouseDetail(APIView) :
-    """Fundhouse crud on single object"""
-    
     def get_object(self,pk):
         try:
             return Fundhouse.objects.get(pk=pk)
@@ -248,109 +182,8 @@ class FundhouseDetail(APIView) :
         inst.delete()
         return Response({"message":"deleted"})
         
-class StockListCreate(ListAPIView):
-    queryset = Stock.objects.all()
-    serializer_class = StockSerializer
-    
-class StockDetail(APIView):
-    
-    def get_object(self,pk):
-        try:
-            return Stock.objects.get(pk=pk)
-        except ETF_holdings.DoesNotExist:
-            raise Http404("stock not found")
         
-    def get(self,request,pk):
-        inst=self.get_object(pk)
-        serializer=StockSerializer(inst)
-        return Response(serializer.data)
     
-    
-    def put(self,request,pk):
-        pass
-    def delete(self,request,pk):
-        
-        # inst=self.get_object(pk)
-        # inst.delete()
-        # return Response({"success":True,"message":"successfully deleted"})
-    
-        Stock.objects.all().delete()
-        return Response({"success":True,"message":"deleted"})
-    
-class StocksInEtfs(APIView):
-    def get_queryset(self, query_param):
-        
-            if query_param:
-                # Filter by the provided query_param (etfname)
-                ls=list((ETF_holdings.objects.filter(etfname=query_param).values_list('ticker', flat=True).distinct()))
-                return {"data":ls}
-            else:
-                # Fetch all unique etfname values and their corresponding tickers
-                unique_etf_names = ETF_holdings.objects.values_list('etfname', flat=True).distinct()
-                etf_stock_counts = {}
-                for etfname in unique_etf_names:
-                    tickers = list(set(ETF_holdings.objects.filter(etfname=etfname).values_list('ticker', flat=True)))
-                    etf_stock_counts[etfname] = {
-                        'tickers': tickers,
-                        'count': len(tickers)
-                    }
-                return etf_stock_counts
-      
-    
-    def get(self, request):
-        query_param = request.query_params.get('etf', None)
-        inst=self.get_queryset(query_param)
-        return Response(inst)
-    
-
-class DownloadStockHoldings(APIView):
-    
-    def get_queryset(self, start_date, end_date, fund_house, etfs):
-        try:
-            if start_date==None and end_date==None:
-                return ETF_holdings.objects.all()
-            
-            if end_date==None:
-                return ETF_holdings.objects.filter(date__gte=start_date)
-            
-            if start_date==None:
-                return ETF_holdings.objects.filter(date__lte=end_date)
-            
-                
-            queryset = ETF_holdings.objects.filter(date__range=[start_date, end_date])
-            if fund_house:
-                queryset = queryset.filter(fund_house__in=fund_house.split(","))
-            if etfs:
-                queryset = queryset.filter(etf__in=etfs.split(","))
-                
-            return queryset
-    
-        except  Exception as e:
-            
-            print("error in input fields",e)
-            raise Http404("please check input fields")
-           
-    
-    def get(self, request):
-        # Get query parameters from request
-        start_date = request.query_params.get('start_date',None)
-        end_date = request.query_params.get('end_date',None)
-        fund_house = request.query_params.get('fund_house',None)
-        etfs = request.query_params.getlist('etfs',None)
-        
-        # Fetch queryset based on parameters
-        queryset = self.get_queryset(start_date, end_date, fund_house, etfs)
-        
-        # Convert queryset to DataFrame
-        data = list(queryset.values())
-        df = pd.DataFrame(data)
-        
-        # Create CSV file in memory
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="stock_holdings.csv"'
-        df.to_csv(path_or_buf=response, index=False)
-        
-        return response
         
             
             
