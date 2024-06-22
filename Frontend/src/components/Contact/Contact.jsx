@@ -1,8 +1,9 @@
 
 function Contact() {
-  return (
+  return ( 
     <>
-      <h1 className="text-primary  text-4xl m-56">Contact Component starts Here</h1>
+      <h1 className="ml-80 mr-60 mt-40 mb-60 text-4xl font-bold sm:text-2xl">Contact Page works</h1>
+
     </>
   )
 }

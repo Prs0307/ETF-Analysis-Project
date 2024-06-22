@@ -26,37 +26,43 @@ def fetch_data_from_Ishare(start_date,end_date,fund_house,etfs=None):
     valid_etfs=validate_etfs(etfs)
     if not valid_etfs:
         raise Exception("etfs not found")
-    print("valid etfs are",valid_etfs)
+    
     
     
 
     input_dates=valid_dates_(start_date,end_date)
+    print("input dates",input_dates)
     pending_etfs=[]
     
     for date in input_dates:
         # For Perticuler Ticker [ETF] we need to check for its data from link available or not
 
         for etf in valid_etfs:
-            curr_etf_link=get_etf_link(etf)
+            current_etf_link=get_etf_link(etf)
             
-            if curr_etf_link=="" or " " or None:
+            
+            if not current_etf_link:
+                
                 pending_etfs.append(etf)
                 continue
             
-            current_csv_url=ISHARE_BASE_URL+fetch_csv_url_from_web(curr_etf_link)+'&asOfDate='+date
+            print("current etf link",current_etf_link)
+            current_csv_url=ISHARE_BASE_URL+fetch_csv_url_from_web(current_etf_link)+'&asOfDate='+date
+            
+            print("ccl",current_csv_url)
             if not current_csv_url:
                 pending_etfs.append(etf)
                 continue
             
             current_dataframe=download_and_save_csv(etf,current_csv_url,date,fund_house)
             
-            if not current_dataframe:
+            
+            if  current_dataframe is None or current_dataframe.shape[0]==0:
+                print("current df is none or shape 0")
                 pending_etfs.append(etf)
                 continue
                
-            if current_dataframe.shape[0]<0:
-                pending_etfs.append(etf)
-                continue
+            
             
             
             #saving current dataframe in db
@@ -69,56 +75,83 @@ def fetch_data_from_Ishare(start_date,end_date,fund_house,etfs=None):
             
             
             #saving dataframe in databse
-            add_EtfStocks_in_DB(clean_dataframe)
+            add_EtfStocks_in_DB(clean_dataframe,pending_etfs,valid_etfs)
             
-                
-                
-            
-
-              
-
-    
-  
-
 
 def convert_json_to_df(data):
     """function: this function takes the list of dictionaries(eg. [{},{},{}]) as input and create dataframe from it and return it """
     final_array=[]
+    print("in convert to jason")
   
     #iterating each row
     for json_data in data:
-        try:
-            keys=list(json_data.keys())
-            if len(keys)==2 and len(json_data[None])>10 :
-                ticker=json_data[keys[0]] or None
-                name=json_data[keys[1]][0] or None
-                sector=json_data[keys[1]][1] or None
-                asset_class=json_data[keys[1]][2] or None
-                market_value=json_data[keys[1]][3] or None
-                weight=json_data[keys[1]][4] or None
-                notional_value=json_data[keys[1]][5] or None
-                shares=json_data[keys[1]][6] or None
-                price=json_data[keys[1]][7] or None
-                location=json_data[keys[1]][8] or None
-                exchange=json_data[keys[1]][9] or None
-                currency=json_data[keys[1]][10] or None
-                fx_rate=json_data[keys[1]][11] or None
-                market_currency=json_data[keys[1]][12] or None
-                accrual_date=json_data[keys[1]][13] or None
+       
+        keys=list(json_data.keys())
+        if len(keys) == 2 and len(json_data[keys[1]]) > 10:
+            ticker = json_data.get(keys[0], None)
+            details = json_data.get(keys[1], [])
+            
+            if len(details) >= 14:  # Ensure there are at least 14 elements in the details list
+                name = details[0] or None
+                sector = details[1] or None
+                asset_class = details[2] or None
+                market_value = details[3] or None
+                weight = details[4] or None
+                notional_value = details[5] or None
+                shares = details[6] or None
+                price = details[7] or None
+                location = details[8] or None
+                exchange = details[9] or None
+                currency = details[10] or None
+                fx_rate = details[11] or None
+                market_currency = details[12] or None
+                accrual_date = details[13] or None
                 
-                final_array.append([ticker,name,sector,asset_class,market_value,weight,notional_value,shares,price,location,exchange,currency,fx_rate,market_currency ,accrual_date])
+                # Append a list of values to final_array
+                final_array.append([
+                    ticker, name, sector, asset_class, market_value, weight,
+                    notional_value, shares, price, location, exchange, currency,
+                    fx_rate, market_currency, accrual_date
+                ])
+   
 
-            else:
-                return None
-        except Exception as e:
-            print("error in convert json",json_data)
-            return None
+        else:continue
         
-    return pd.DataFrame(final_array,columns=ISHARE_DF_COLUMNS[-3:])
+    print("fianl array is",(final_array[:4]))
+    
+    
+    if len(final_array)>0:
+        print("greater lenght")
+        df=pd.DataFrame((final_array),columns=[
+    "ticker",
+    "name",
+    "sector",
+    "asset_class",
+    "market_value",
+    "weight",
+    "notional_value",
+    "shares",
+    "price",
+    "location",
+    "exchange",
+    "currency",
+    "fx_rate",
+    "market_currency",
+    "accrual_date"])
+        
+        
+        return df
+       
+        
+        
+    return None
+        
+    
 
 
 
 def download_and_save_csv(etfname,csv_url,date,fund_house):
+   
     """function: it takes csv url as input and fetch the data from csv"""
     try:
         response = requests.get(csv_url)
@@ -138,22 +171,26 @@ def download_and_save_csv(etfname,csv_url,date,fund_house):
     for i, row in enumerate(reader, start=1):
         if start_row <= i:
             selected_rows.append(row)
-
+            
+   
     if selected_rows:
         dataframe=convert_json_to_df(selected_rows)
-        if dataframe:
+        
+        if dataframe is not None or dataframe.shape[0]>0:
+            print("in download and save dataframe valid")
             dataframe['etfname']=etfname
             dataframe['date']=date
             dataframe["fund_house"]=fund_house
             return dataframe
+    
+    return None
             
         
         
 
      
         
-    else:
-        return None
+    
     
     
 def fetch_csv_url_from_web(webpage_url):
@@ -188,8 +225,10 @@ def fetch_csv_url_from_web(webpage_url):
 def cleaned_dataframe(main_dataframe):
     """takes single etf dataframe as input and clean it and return it """
     
+    print("into cleaning section")
+    date=list(main_dataframe["date"])[0]
         # remove  Empty rows
-    df = df.dropna(how='all')  
+    df = main_dataframe.dropna(how='all')  
     # function to convert string values to numbers
     list_of_col=['market_value' , 'weight', 'notional_value' ,'shares',	'price'	,'fx_rate']
     for col_name in (list_of_col):
@@ -197,7 +236,9 @@ def cleaned_dataframe(main_dataframe):
         df[col_name]=df[col_name].astype("float64")
     # function to convert datetime values to datetime objects
 
-    df['date'] = pd.to_datetime(df['date'], format='%Y%M%d').dt.date
+    df['date'] =convert_date_format(date)
+    print("in clened df",df)
+    # df["date"]=df["date"].apply(lambda x:str(x))
 
         
     # print(df.head)
