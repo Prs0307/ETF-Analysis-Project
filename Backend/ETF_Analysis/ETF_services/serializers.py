@@ -6,8 +6,18 @@ class ETFSerializer(ModelSerializer):
         model=ETF
         fields="__all__"
 
+class  ETFHoldingSerializer(ModelSerializer):
+     class Meta:
+        model=ETF_holdings
+        fields="__all__"
+
 class FundhouseSerializer(ModelSerializer):
     class Meta:
         model=Fundhouse
         fields="__all__"
         
+
+class StockSerializer(ModelSerializer):
+    class Meta:
+        model=Stock
+        fields="__all__"
