@@ -16,7 +16,7 @@ ISHARE_DF_COLUMNS = [
     "fx_rate",
     "market_currency",
     "accrual_date",
-    "etfname",
-    "date",
-    "fund_house"
+    # "etfname",
+    # "date",
+    # "fund_house"
 ]

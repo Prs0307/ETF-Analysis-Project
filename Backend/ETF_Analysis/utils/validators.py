@@ -4,10 +4,11 @@ from utils.functions.db_queries import get_etf_list
 
 
 def validate_etfs(etfs):
+    print("in valid etfs")
     etf_list= get_etf_list()
     
     
-    if not etfs.split(","):
+    if not etfs:
         if len((etf_list))<20:
             return etf_list
         else :
@@ -15,11 +16,12 @@ def validate_etfs(etfs):
         
     valid_etfs=[]
     
+    etfs=etfs.split(",")
     for etf in etfs:
-        
         if etf in  etf_list:
             print('valid etf found ',etf)
             valid_etfs.append(etf)
+    print("valid etfs are",validate_etfs)
     return valid_etfs
 
 
@@ -67,4 +69,24 @@ def str_to_int(s):
     
         return float(raw_num)
     else:
-        return s
+        return 
+    
+
+
+def convert_date_format(input_date):
+    # Check if input_date has the correct length
+    if len(input_date) != 8:
+        raise ValueError("Input date string must be in YYYYMMDD format")
+
+    # Extract year, month, and day from input_date
+    year = input_date[:4]
+    month = input_date[4:6]
+    day = input_date[6:8]
+
+    # Create formatted date string
+    formatted_date = f"{year}-{month}-{day}"
+
+    return formatted_date
+
+    
+
