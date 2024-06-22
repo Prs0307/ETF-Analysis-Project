@@ -1,4 +1,4 @@
-from ETF_services.models import ETF_holdings,ETF,AvailabilityDate
+from ETF_services.models import ETF_holdings,ETF,Stock
 from django.db import transaction
 from datetime import datetime
 
@@ -12,11 +12,22 @@ def parse_date(date_str):
     return None
 
 
+
 def get_etf_list():
     etf_list=list(ETF.objects.values_list('etf_shortname', flat=True))
     print(etf_list)
     return etf_list
 
+def stock_details_exists(stock_shortname,stock_name):
+    try:
+        obj=Stock.objects.get(stock_name=stock_name,stock_shortname=stock_shortname)
+        print("stock exist in db",obj)
+        return True
+    except Exception as e:
+        print("exception in stock details exist function:",e)
+        return False
+    
+    
 def get_etf_link(etf):
 
     try:
@@ -27,6 +38,35 @@ def get_etf_link(etf):
         print(e)
         raise Exception("etf link not found")
     
+    
+    
+def update_stock_table(stock_shortname,stock_name):
+    print("stockname and short",stock_shortname,stock_name)
+    
+    if not stock_details_exists(stock_shortname,stock_name):
+        obj=Stock.objects.create(stock_shortname=stock_shortname,stock_name=stock_name)
+        print("in update stock table",obj)
+        return obj
+    else:
+        print("exist in db")
+        return None
+        
+def  update_etf_table(etfname,stock):
+
+    if stock!=None:
+        print("stock exist",stock.id)
+        try:
+            etf=ETF.objects.get(etf_name=etfname)
+            if not etf.stocks.filter(pk=stock.id).exists():
+                print("new stock added for etf")
+                etf.stocks.add(stock)
+                etf.save()
+        except Exception as e:
+            print("exception in adding stock for etf",e)
+            return None
+                
+           
+       
 def add_EtfStocks_in_DB(dataframe,pending_etfs,valid_etfs):
     updated_etfs=[]
     for etf in valid_etfs:
@@ -35,6 +75,7 @@ def add_EtfStocks_in_DB(dataframe,pending_etfs,valid_etfs):
     print(dataframe.columns)
 
 
+    
           
     try:
             with transaction.atomic():
@@ -62,6 +103,11 @@ def add_EtfStocks_in_DB(dataframe,pending_etfs,valid_etfs):
                     if if_allready_exist:
                         continue
                     else:
+                        update_stock_table(row["ticker"],row["name"])
+                        # update_etf_table(row["etfname"],stock)
+                        
+                        
+                        #get the etf_name, check the stock is present for it or not, if not add it
                         etf = ETF_holdings(
                                 ticker=row['ticker'],
                                 name=row['name'],

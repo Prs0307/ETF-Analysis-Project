@@ -37,36 +37,43 @@ class Fundhouse(models.Model):
     class Meta:
          db_table="Fundhouse"
     
+
 class Stock(models.Model):
-    stock_name=models.CharField(max_length=100)
+    stock_name=models.CharField(max_length=500)
     stock_shortname=models.CharField(max_length=100)
-    
     class Meta:
          db_table="Stock"
+         
 class ETF(models.Model):
     etf_name=models.CharField(max_length=100)
     etf_shortname=models.CharField(max_length=30)
     etf_link=models.CharField(max_length=100)
     fund_house=models.ForeignKey(Fundhouse,related_name="Etfs",null=True,blank=True,on_delete=models.SET_NULL)
+    etf_stocks=models.TextField(blank=True,null=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
+    stocks=models.ManyToManyField(Stock)
+    
     
     class Meta:
          db_table="ETF"
 
-class AvailabilityDate(models.Model):
-    date=models.DateField(blank=True,null=True)
-    is_updated=models.BooleanField(default=False)
-    fund_house=models.CharField(max_length=100,null=True,blank=True)
-    pending_updates=models.TextField(null=True,blank=True)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
-    updated_at = models.DateTimeField(auto_now=True, editable=False)
+
+    
+    
+# class AvailabilityDate(models.Model):
+#     date=models.DateField(blank=True,null=True)
+#     is_updated=models.BooleanField(default=False)
+#     fund_house=models.CharField(max_length=100,null=True,blank=True)
+#     pending_updates=models.TextField(null=True,blank=True)
+#     created_at = models.DateTimeField(auto_now_add=True, editable=False)
+#     updated_at = models.DateTimeField(auto_now=True, editable=False)
     
     
     
     
-    class Meta:
-        db_table="AvailabilityDate"
+    # class Meta:
+    #     db_table="AvailabilityDate"
     
 
     
