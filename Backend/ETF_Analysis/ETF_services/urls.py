@@ -24,5 +24,9 @@ urlpatterns = [
     path('etf/<pk>/',ETFDetail.as_view()),
     path('fundhouse/',FundhouseListCreate.as_view()),
     path('fundhouse/<pk>/',FundhouseDetail.as_view()),
+    path('stock/',StockListCreate.as_view()),
+    path('stock/<pk>/',StockDetail.as_view()),
+    path('etf-stocks/',StocksInEtfs.as_view()),
+    path('download-stock-holdings/',DownloadStockHoldings.as_view()),
 ]
 
