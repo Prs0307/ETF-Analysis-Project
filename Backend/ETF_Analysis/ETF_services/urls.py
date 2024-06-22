@@ -24,11 +24,5 @@ urlpatterns = [
     path('etf/<pk>/',ETFDetail.as_view()),
     path('fundhouse/',FundhouseListCreate.as_view()),
     path('fundhouse/<pk>/',FundhouseDetail.as_view()),
-     
-    
-    
-   
-
-
 ]
 
