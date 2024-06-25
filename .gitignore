@@ -28,5 +28,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.pyc
 _pycache_/
 _pycache_
