@@ -9,16 +9,21 @@ export default function Header() {
                         <img
                             src={Logo}
                             // src="https://alexharkness.com/wp-content/uploads/2020/06/logo-4.png"
-                            className="mr-3 h-12  rounded-lg bg-primary"
+                            className="mr-3 h-12  rounded-lg bg-white"
                             alt="Logo"
                         />
                     </Link>
-                    <div className="flex items-center lg:order-2">
+                    <div className="flex items-center lg:order-2" >
+                        <button  className="transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300 ">
+
+                       
                         <Link
+                           
                             to="#"
-                            className="text-white bg-primary hover: bg-blue-800  font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 focus:outline-none"
-                        >Search For ETF
+                            className="text-primary border-solid border-2 border-primary bg-white    font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.25 mr-2 focus:outline-none"
+                        >Get Started
                         </Link>
+                        </button>
                 
                     </div>
                     <div
