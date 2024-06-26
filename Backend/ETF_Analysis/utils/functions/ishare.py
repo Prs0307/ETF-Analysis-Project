@@ -27,29 +27,26 @@ def fetch_data_from_Ishare(start_date,end_date,fund_house,etfs=None):
     if not valid_etfs:
         raise Exception("etfs not found")
     
-    
-    
+
 
     input_dates=valid_dates_(start_date,end_date)
-    print("input dates",input_dates)
     pending_etfs=[]
+    
+    if input_dates==[]:
+        raise Exception("invalid date input")
     
     for date in input_dates:
         # For Perticuler Ticker [ETF] we need to check for its data from link available or not
 
         for etf in valid_etfs:
             current_etf_link=get_etf_link(etf)
-            
-            
             if not current_etf_link:
-                
                 pending_etfs.append(etf)
                 continue
             
-            print("current etf link",current_etf_link)
+          
             current_csv_url=ISHARE_BASE_URL+fetch_csv_url_from_web(current_etf_link)+'&asOfDate='+date
-            
-            print("ccl",current_csv_url)
+          
             if not current_csv_url:
                 pending_etfs.append(etf)
                 continue
@@ -151,7 +148,6 @@ def convert_json_to_df(data):
 
 
 def download_and_save_csv(etfname,csv_url,date,fund_house):
-   
     """function: it takes csv url as input and fetch the data from csv"""
     try:
         response = requests.get(csv_url)
@@ -232,8 +228,7 @@ def cleaned_dataframe(main_dataframe):
     # function to convert string values to numbers
     list_of_col=['market_value' , 'weight', 'notional_value' ,'shares',	'price'	,'fx_rate']
     for col_name in (list_of_col):
-        df[col_name]=df[col_name].apply(str_to_int)
-        df[col_name]=df[col_name].astype("float64")
+        df[col_name]=df[col_name].apply(str_to_float)
     # function to convert datetime values to datetime objects
 
     df['date'] =convert_date_format(date)
@@ -243,6 +238,7 @@ def cleaned_dataframe(main_dataframe):
         
     # print(df.head)
     # print(df['date'])
+    print("df lenghth",df.shape)
     return df
     
     

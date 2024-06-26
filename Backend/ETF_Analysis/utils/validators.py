@@ -8,7 +8,7 @@ def validate_etfs(etfs):
     etf_list= get_etf_list()
     
     
-    if not etfs:
+    if  not etfs:
         if len((etf_list))<20:
             return etf_list
         else :
@@ -62,15 +62,30 @@ def valid_dates_(start_date,end_date):
         
 
     
+from decimal import Decimal
 
-def str_to_int(s):
+from decimal import Decimal, InvalidOperation
+
+def str_to_float(s):
     if isinstance(s, str):
-        raw_num=s.replace(',','')
-    
-        return float(raw_num)
+        # Remove commas
+        raw_num = s.replace(',', '').strip()
+        if not raw_num:
+            return 0
+        
+        try:
+            # Try to convert to Decimal
+            return Decimal(raw_num)
+        except Exception as e:
+            # Handle invalid decimal conversion
+            print(f"InvalidOperation: Could not convert '{raw_num}' to Decimal.")
+            return 0
     else:
-        return 
-    
+        # If not a string, return 0
+        return 0
+
+
+
 
 
 def convert_date_format(input_date):

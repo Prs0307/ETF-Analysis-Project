@@ -15,7 +15,7 @@ def parse_date(date_str):
 
 def get_etf_list():
     etf_list=list(ETF.objects.values_list('etf_shortname', flat=True))
-    print(etf_list)
+  
     return etf_list
 
 def stock_details_exists(stock_shortname,stock_name):
@@ -35,8 +35,9 @@ def get_etf_link(etf):
         return link
         
     except Exception as e:
-        print(e)
-        raise Exception("etf link not found")
+        print("exception for getting etf link")
+        return None
+        
     
     
     
@@ -68,19 +69,9 @@ def  update_etf_table(etfname,stock):
            
        
 def add_EtfStocks_in_DB(dataframe,pending_etfs,valid_etfs):
-    updated_etfs=[]
-    for etf in valid_etfs:
-        if etf not in pending_etfs:updated_etfs.append(etf)
-    
-    print(dataframe.columns)
-
-
-    
-          
-    try:
-            with transaction.atomic():
-                etf_objects = []
+                
                 for index, row in dataframe.iterrows():
+                  
                     # Check if ETF already exists
                     if_allready_exist=ETF_holdings.objects.filter(ticker=row['ticker'],
                             name=row['name'],
@@ -103,40 +94,35 @@ def add_EtfStocks_in_DB(dataframe,pending_etfs,valid_etfs):
                     if if_allready_exist:
                         continue
                     else:
-                        update_stock_table(row["ticker"],row["name"])
-                        # update_etf_table(row["etfname"],stock)
-                        
-                        
-                        #get the etf_name, check the stock is present for it or not, if not add it
-                        etf = ETF_holdings(
-                                ticker=row['ticker'],
-                                name=row['name'],
-                                sector=row['sector'],
-                                asset_class=row['asset_class'],
-                                market_value=row['market_value'],
-                                weight=row['weight'],
-                                notional_value=row['notional_value'],
-                                shares=row['shares'],
-                                price=row['price'],
-                                location=row['location'],
-                                exchange=row['exchange'],
-                                currency=row['currency'],
-                                fx_rate=row['fx_rate'],
-                                market_currency=row['market_currency'],
-                                etfname=row['etfname'],
-                                date=parse_date(row['date']),
-                                fund_house=row['fund_house']
-                                
-                            )
-                        etf_objects.append(etf)
+                            try:
+                                etf = ETF_holdings.objects.create(
+                                        ticker=row['ticker'],
+                                        name=row['name'],
+                                        sector=row['sector'],
+                                        asset_class=row['asset_class'],
+                                        market_value=row['market_value'],
+                                        weight=row['weight'],
+                                        notional_value=row['notional_value'],
+                                        shares=row['shares'],
+                                        price=row['price'],
+                                        location=row['location'],
+                                        exchange=row['exchange'],
+                                        currency=row['currency'],
+                                        fx_rate=row['fx_rate'],
+                                        market_currency=row['market_currency'],
+                                        etfname=row['etfname'],
+                                        date=parse_date(row['date']),
+                                        fund_house=row['fund_house']
+                                        
+                                    )
+                            except Exception as e:
+                                continue
                     
                 # Bulk create the ETF objects
-                ETF_holdings.objects.bulk_create(etf_objects)
+                        
+                        
                 
-        
-    except Exception as e:
-            print("error in adding single etf stocs",e)
-            raise Exception("Error in storing in DB")
+   
 
     
     
