@@ -3,10 +3,12 @@ import ReactDOM from 'react-dom/client'
 import './index.css'
 import Layout from './Layout'
 import Home from './components/Home/Home'
-import About from './components/About/About'
 import Contact from './components/Contact/Contact'
+import About from './components/About/About'
+// import About from './components/About/About'
 import { RouterProvider } from 'react-router-dom'
 import { createBrowserRouter } from 'react-router-dom'
+import EtfDetails from './components/ETFAnalysis/EtfDetails'
 // import App from './App.jsx'
 const router =createBrowserRouter(
   [
@@ -16,7 +18,8 @@ const router =createBrowserRouter(
       children:[
         {
           path:"",
-          element:<Home/>
+          element:<Home/>,
+         
         },
         {
           path:"/about",
@@ -25,7 +28,11 @@ const router =createBrowserRouter(
         {
           path:"/contact",
           element:<Contact/>
-        }
+        },
+        {
+          path:"/etfdetails/:id",
+          element:<EtfDetails/>
+        },
         
       ]
 

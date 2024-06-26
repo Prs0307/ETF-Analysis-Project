@@ -4,7 +4,9 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
- 
+  safelist: [ /* Add 'no-scrollbar' to the safelist if needed */
+    'no-scrollbar',
+  ],
   theme: {
     colors: {
       transparent: 'transparent',
@@ -24,7 +26,10 @@ export default {
         light: '#22d3ee',
       },
       'primary':'#0f172a',
-      'secondary': '#0ea5e9'
+      'secondary': '#0ea5e9',
+      'orange': '#ED7117',
+      'DAISY':'#FAFAFA',
+      'pebble':'#333333'
 
     },
   },

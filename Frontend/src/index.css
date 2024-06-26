@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.no-scrollbar::-webkit-scrollbar { /* Target the scrollbar element */
+    display: none; /* Hide the scrollbar */
+  }
+.animate-pulse-in {
+    @layer animation-pulse; /* Use Tailwind's built-in 'animate-pulse' */
+    
+  }
+  .animate-pulse-limited {
+    animation: pulse-limited 1s ease-in-out; /* Adjust duration as needed */
+  }
+  .blend-multiply {
+    mix-blend-mode: multiply;
+    vertical-align: middle;
+  } 
