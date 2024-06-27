@@ -26,7 +26,7 @@ function Search_Recommendations({searchInput}) {
 
 useEffect(()=>{
     filterData()
-},[searchInput])
+},[filterData, searchInput])
 
   // Handle data fetching or receiving 
   
