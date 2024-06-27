@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React from 'react'
 import { Link,NavLink } from 'react-router-dom';
-
+import Logo from '../../assets/images/logo2.svg'
 export default function Footer() {
     return (
         <footer className="bg-white border-y">
@@ -10,8 +10,9 @@ export default function Footer() {
                     <div className="mb-6 md:mb-0">
                         <Link to="/" className="flex items-center">
                             <img
-                                src="https://alexharkness.com/wp-content/uploads/2020/06/logo-2.png"
-                                className="mr-3 h-16"
+                            src={Logo}
+                                // src="https://alexharkness.com/wp-content/uploads/2020/06/logo-2.png"
+                               className="mr-3 h-12  rounded-lg bg-primary"
                                 alt="Logo"
                             />
                         </Link>
@@ -37,7 +38,7 @@ export default function Footer() {
                             <ul className="text-gray-500 font-medium">
                                 <li className="mb-4">
                                     <a
-                                        href="https://github.com/hiteshchoudhary"
+                                        href="https://github.com/prs0307/ETF-Analysis-Project"
                                         className="hover:underline"
                                         target="_blank"
                                         rel="noreferrer"
