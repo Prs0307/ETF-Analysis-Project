@@ -2,6 +2,7 @@
 // import React from 'react'
 import { Link } from 'react-router-dom';
 import SearchBox from '../basic_componenTS/Search';
+import CardApp from '../Cards/CardApp';
 export default function Home() {
     return (
         <div className="mx-auto w-full max-w-7xl px-1 py-2 min-h-screen">
@@ -18,6 +19,7 @@ export default function Home() {
                    <SearchBox />
                    </div>
                 </div>
+                <div>  <CardApp />{/* Display your card component */}</div>
             </div>
         </div>
     </div>
