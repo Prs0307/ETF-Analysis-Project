@@ -1,9 +1,5 @@
-// App.jsx
-'use client';
 import React from 'react';
-import SearchBox from '../SearchBox/SearchBox'; // Import your SearchBox component
-import Card from './card'; // Import your Card component
-import Logo from '../SearchBox/logo'; // Import your Logo component
+import Card from './card';
 
 const App = () => {
   const cardsData = [
@@ -47,9 +43,7 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
-      <Logo /> {/* Display your logo component */}
-      <SearchBox /> {/* Display your search box component */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
         {cardsData.map((card, index) => (
           <Card
             key={index}

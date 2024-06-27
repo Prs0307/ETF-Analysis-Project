@@ -29,7 +29,7 @@ const SearchBox = () => {
       </div>
       <button
         type="submit"
-        className="ml-3 px-6 py-3 text-lg text-white bg-blue-600 hover:bg-blue-700 rounded-full shadow-md transition duration-300 ease-in-out"
+        className="ml-3 px-6 py-3 text-lg text-black bg-blue-600 hover:bg-blue-700 rounded-full shadow-md transition duration-300 ease-in-out"
       >
         Search
       </button>
