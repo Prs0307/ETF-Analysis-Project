@@ -19,6 +19,7 @@ from django.urls import path
 from .views import *
 urlpatterns = [
     path('update-etfstocks/',EtfStocksListCreate.as_view() ),
+    path('update-etfstocks/<pk>/',EtfStocksDetail.as_view() ),
     path('etf-bulk-update/',ETFBulk.as_view()),
     path('etf/',ETFListCreate.as_view()),
     path('etf/<pk>/',ETFDetail.as_view()),
