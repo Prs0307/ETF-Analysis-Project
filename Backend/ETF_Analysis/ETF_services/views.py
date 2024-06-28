@@ -14,7 +14,7 @@ from .serializers import *
 from django.http import Http404
 from django_filters.rest_framework import DjangoFilterBackend
 import pandas as pd
-
+from ETF_Analysis.pagination import PaginationSize20
 
 
 class EtfStocksListCreate(ListAPIView):
@@ -22,6 +22,7 @@ class EtfStocksListCreate(ListAPIView):
     
     filter_backends = [DjangoFilterBackend]
     serializer_class =  ETFHoldingSerializer
+    pagination_class = PaginationSize20
     filterset_fields= {
             "ticker": ["exact", "icontains"],
             "name": ["exact", "icontains"],
@@ -48,6 +49,12 @@ class EtfStocksListCreate(ListAPIView):
     
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
+        page_param = self.request.query_params.get("page")
+        if page_param:
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return Response(self.get_paginated_response(serializer.data))
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
     
