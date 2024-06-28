@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react';
-
-
+import FilterComponent from './FilterComponent';
+// import FilterByDate from './FilterByDate';
 interface TableData {
   ticker: string;
   name: string;
@@ -43,7 +43,7 @@ const Table: React.FC = () => {
   const [filter, setFilter] = useState('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-  const [selectedDate, setSelectedDate] = useState<string>('');
+  // const [selectedDate, setSelectedDate] = useState<string>('');
 
   // Calculate total pages based on rowsPerPage
   const totalPages: number = Math.ceil(tableData.length / rowsPerPage);
@@ -58,9 +58,9 @@ const Table: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleDateChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
-    setSelectedDate(event.target.value);
-  };
+  // const handleDateChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
+  //   setSelectedDate(event.target.value);
+  // };
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setFilter(event.target.value);
@@ -91,6 +91,10 @@ const Table: React.FC = () => {
         <div className="flex justify-between items-center p-4">
           <h1 className="text-2xl font-bold">Holdings Table</h1>
           <div className="flex space-x-4 text-black">
+          <div className="filters">
+
+            <FilterComponent/>
+          </div>
           <input
           type="text"
         className="product-textbox clearable p-2"
@@ -98,12 +102,7 @@ const Table: React.FC = () => {
         value={filter}
         onChange={handleFilterChange}
       />
-      <select className="date-dropdown" value={selectedDate} onChange={handleDateChange}>
-        <option value="">Select a date</option>
-        <option value="20240626">Jun 26, 2024</option>
-        <option value="20240531">May 31, 2024</option>
-        <option value="20240328">Mar 28, 2024</option>
-      </select>
+      
            </div>
         </div>
         
