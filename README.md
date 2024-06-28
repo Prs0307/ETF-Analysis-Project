@@ -1,4 +1,4 @@
-﻿Certainly! Here's a regenerated response that combines the strengths of the previous ones and addresses potential issues:
+
 
 ```markdown
 # Django-React-ETF Project
@@ -13,6 +13,7 @@ This README guides you through setting up the development environment for your D
 ## Project Structure (**Assuming Separate Backend and Frontend Projects**):
 
 ```
+
 ETF-ANALYSIS-PROJECT/
 ├── Backend/  
 │   ├── manage.py
@@ -29,6 +30,13 @@ ETF-ANALYSIS-PROJECT/
 **Note:** As our Django and React Both part of projects are integrated into a single codebase, adjust the structure accordingly.
 
 ## Setting Up the Backend (Django)
+   ```
+0. **Clone the Project (Must):**
+   Open any Terminal and paste following Command:
+
+   ```bash
+   git clone https://github.com/Prs0307/ETF-Analysis-Project.git
+   ```
 
 1. **Create a virtual environment (recommended):**
    A virtual environment isolates project dependencies. Here's how to create one within the `Backend` directory using `venv`:
