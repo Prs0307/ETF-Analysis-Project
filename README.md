@@ -38,8 +38,10 @@ This README guides you through setting up the development environment for your D
 
    ```bash
    source .venv/bin/activate  # Linux/macOS
-   .venv\Scripts\activate.bat  # Windows
+   cd .\.venv\Scripts\  # Windows
    ```
+   ```bash
+   activate # windows
 
 3. **Install project dependencies (Make sure you are in same directory that  of `requirements.txt` ):**
 
