@@ -10,22 +10,7 @@ This README guides you through setting up the development environment for your D
 * **Python 3.6 or later:** Download and install it from the official website: https://www.python.org/downloads/
 * **Node.js and npm (or yarn):** Download and install them from the official website: https://nodejs.org/en
 
-## Project Structure (**Assuming Separate Backend and Frontend Projects**):
-
-```
-
-ETF-ANALYSIS-PROJECT/
-├── Backend/  
-│   ├── manage.py
-│   ├── ETF_Analysis 
-│   │   ├── __init__.py
-│   │   ├── settings.py
-│   │   ├── urls.py
-│   │   └── ... (other Django project files)
-│   └── requirements.txt  # List of Python dependencies
-└── Frontend/  # React project directory
-    └── ... (Your React project files)
-```
+ 
 
 **Note:** As our Django and React Both part of projects are integrated into a single codebase, adjust the structure accordingly.
 
