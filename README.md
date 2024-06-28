@@ -48,6 +48,8 @@ This README guides you through setting up the development environment for your D
    Install the packages listed in `requirements.txt`:
 
    ```bash
+   cd ..
+   cd ..
    pip install -r requirements.txt
    ```
 
