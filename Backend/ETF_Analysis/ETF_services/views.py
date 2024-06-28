@@ -340,9 +340,8 @@ class StocksInETF(APIView):
         else:
             return Response({"success":False,"message":"etf not found"})
             
-        
-            
-            
+       
+    
             
             
             

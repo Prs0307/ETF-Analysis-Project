@@ -29,5 +29,8 @@ urlpatterns = [
     path('stock/<pk>/',StockDetail.as_view()),
     path('download-stock-holdings/',DownloadStockHoldings.as_view()),
     path('etf-stocks/',StocksInETF.as_view()),
+
+
+    
 ]
 

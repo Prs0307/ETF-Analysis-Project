@@ -9,5 +9,6 @@ def fetch_data_from_fund(start_date,end_date,fund_house,etfs=None):
     else:
         raise Http404("fund house not found!")
         
+    
         
     
