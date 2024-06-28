@@ -95,6 +95,7 @@ def add_EtfStocks_in_DB(dataframe,pending_etfs,valid_etfs):
                         continue
                     else:
                             try:
+                                print("try")
                                 etf = ETF_holdings.objects.create(
                                         ticker=row['ticker'],
                                         name=row['name'],

@@ -12,6 +12,7 @@ def validate_etfs(etfs):
         if len((etf_list))<20:
             return etf_list
         else :
+            print("adding 20 etfs")
             return etf_list[:20]
         
     valid_etfs=[]
