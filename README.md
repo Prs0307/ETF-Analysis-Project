@@ -27,6 +27,7 @@ This README guides you through setting up the development environment for your D
    A virtual environment isolates project dependencies. Here's how to create one within the `Backend` directory using `venv`:
 
    ```bash
+   cd ETF-Analysis-Project
    cd Backend
    python -m venv .venv  # Using ".venv" as the virtual environment name
    ```
