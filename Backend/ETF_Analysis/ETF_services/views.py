@@ -277,31 +277,6 @@ class StockDetail(APIView):
         Stock.objects.all().delete()
         return Response({"success":True,"message":"deleted"})
     
-class StocksInEtfs(APIView):
-    def get_queryset(self, query_param):
-        
-            if query_param:
-                # Filter by the provided query_param (etfname)
-                ls=list((ETF_holdings.objects.filter(etfname=query_param).values_list('ticker', flat=True).distinct()))
-                return {"data":ls}
-            else:
-                # Fetch all unique etfname values and their corresponding tickers
-                unique_etf_names = ETF_holdings.objects.values_list('etfname', flat=True).distinct()
-                etf_stock_counts = {}
-                for etfname in unique_etf_names:
-                    tickers = list(set(ETF_holdings.objects.filter(etfname=etfname).values_list('ticker', flat=True)))
-                    etf_stock_counts[etfname] = {
-                        'tickers': tickers,
-                        'count': len(tickers)
-                    }
-                return etf_stock_counts
-      
-    
-    def get(self, request):
-        query_param = request.query_params.get('etf', None)
-        inst=self.get_queryset(query_param)
-        return Response(inst)
-    
 
 class DownloadStockHoldings(APIView):
     
@@ -351,6 +326,19 @@ class DownloadStockHoldings(APIView):
         df.to_csv(path_or_buf=response, index=False)
         
         return response
+        
+
+
+class StocksInETF(APIView):
+    def get(self, request):
+        etfname=request.query_params.get('param_name', None)
+        
+        if etfname:
+            stocks=ETF_holdings.objects.filter(etfname=etfname).distinct().values_list("ticker","name")
+            return Response({"stocks":stocks})
+        
+        else:
+            return Response({"success":False,"message":"etf not found"})
         
             
             
