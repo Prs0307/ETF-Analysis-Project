@@ -89,7 +89,7 @@ const Table: React.FC = () => {
       <div className="w-full bg-white shadow-md rounded-lg no-scrollbar  overflow-scroll no-scrollbar" style={{ boxShadow: '1px 14px 6px rgba(0, 0, 0, 0.1)' }}>
         {/* Table header with title and filter */}
         <div className="flex justify-between items-center p-4">
-          <h1 className="text-2xl font-bold">Holdings Table</h1>
+          {/* <h1 className="text-2xl font-bold"> </h1> */}
           <div className="flex space-x-4 text-black">
           <div className="filters">
 
@@ -97,7 +97,7 @@ const Table: React.FC = () => {
           </div>
           <input
           type="text"
-        className="product-textbox clearable p-2"
+        className="product-textbox clearable p-2 h-[30px]"
         placeholder="Filter list by keyword"
         value={filter}
         onChange={handleFilterChange}
@@ -108,7 +108,7 @@ const Table: React.FC = () => {
         
         {/* Table body with scrollable content */}
         <div className="overflow-x-auto overflow-y-auto h-96 shadow-xl">
-          <table className="w-full divide-y divide-grey text-black">
+          <table className="w-full divide-y divide-secondary text-black">
             <thead className="bg-white text-black sticky top-0">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Ticker</th>
@@ -127,7 +127,7 @@ const Table: React.FC = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-300">
               {visibleData.map((data, index) => (
-                <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-grey'}>
+                <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-[#c3e4f2]'}>
                   <td className="px-6 py-4 whitespace-nowrap">{data.ticker}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{data.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{data.sector}</td>

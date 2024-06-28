@@ -48,7 +48,7 @@ const FilterComponent = ({ onFilterChange, onSortChange }) => {
   };
 
   return (
-    <div className="filter-container">
+    <div className="filter-container grid grid-cols-5 gap-4"> {/* Use CSS grid for layout */}
       <div className="filter-item">
         <label htmlFor="location">Location:</label>
         <select id="location" value={locationFilter} onChange={handleLocationChange}>
