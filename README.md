@@ -73,10 +73,11 @@ This README guides you through setting up the development environment for your D
 
 **Note:** These steps assume you have a separate React project within the `Frontend` directory.
 
-1. **Navigate to the Frontend directory:**
+1. **Navigate to the Frontend directory : JUST OPEN NEW TERMINAL**
 
    ```bash
-   cd ../Frontend  # Assuming you're still in the Backend directory
+   cd ETF-Analysis-Project
+   cd Frontend  # Assuming you're still in the Backend directory
    ```
 
 2. **Install Node.js packages:**
