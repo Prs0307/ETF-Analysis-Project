@@ -146,7 +146,7 @@ class ETFBulk(APIView):
                     
                 except Exception as e:
                     print(e)
-                    return Response({"success":False,"message":"error in csv file.please check the file"})
+                    return Response({"success":False,"message":"error in csv file.please check the file"},status=HTTP_400_BAD_REQUEST)
                 
                 row_count += 1
             
@@ -156,9 +156,9 @@ class ETFBulk(APIView):
                 
         except Exception as e:
             print(e)
-            return Response({"success":False,"message":"error while updating"})
+            return Response({"success":False,"message":"error while updating"},status=HTTP_400_BAD_REQUEST)
             
-        return Response({"success":True,"message":"data added successfully"})
+        return Response({"success":True,"message":"data added successfully"},status=HTTP_201_CREATED)
     
 class ETFListCreate(ListAPIView):
     
@@ -181,21 +181,21 @@ class ETFDetail(APIView) :
     def get(self,request,pk):
         inst=self.get_object(pk)
         serializer=ETFSerializer(inst)
-        return Response(serializer.data)
+        return Response(serializer.data,status=HTTP_200_OK)
     
     def put(self,request,pk):
         inst=self.get_object(pk)
         serializer=ETFSerializer(instance=inst,data=request.data,partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data,status=HTTP_201_CREATED)
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors,status=HTTP_400_BAD_REQUEST)
             
         
     def delete(self,request,pk):
         ETF.objects.all().delete()
-        return Response({"success":"true","message":"bulk deleted"})
+        return Response({"success":"true","message":"bulk deleted"},status=HTTP_201_CREATED)
     
 class FundhouseListCreate(APIView):
     """Fund house list and create api"""
@@ -206,7 +206,7 @@ class FundhouseListCreate(APIView):
     
     def get(self,request):
         serializer=FundhouseSerializer(self.get_queryset(),many=True)
-        return Response(serializer.data)
+        return Response(serializer.data,status=HTTP_200_OK)
     
     def post(self,request):
         fund_house=request.data.get("fund_house",None)
@@ -219,11 +219,11 @@ class FundhouseListCreate(APIView):
             serializer=FundhouseSerializer(data={"name":fund_house})
             if serializer.is_valid():
                 serializer.save()
-                return Response({"success":"true","message":"fundhouse added"})
+                return Response({"success":"true","message":"fundhouse added"},status=HTTP_201_CREATED)
             else:
-                return Response(serializer.errors)
+                return Response(serializer.errors,status=HTTP_400_BAD_REQUEST)
         
-        return Response({"success":False,"message":"all fields are necessary"})
+        return Response({"success":False,"message":"all fields are necessary"},status=HTTP_400_BAD_REQUEST)
 class FundhouseDetail(APIView) :
     """Fundhouse crud on single object"""
     
@@ -236,7 +236,7 @@ class FundhouseDetail(APIView) :
     def get(self,request,pk):
         inst=self.get_object(pk)
         serializer=FundhouseSerializer(inst)
-        return Response(serializer.data)
+        return Response(serializer.data,status=HTTP_200_OK)
     
     def put(self,request,pk):
         
@@ -253,7 +253,7 @@ class FundhouseDetail(APIView) :
     def delete(self,request,pk):
         inst=self.get_object(pk)
         inst.delete()
-        return Response({"message":"deleted"})
+        return Response({"message":"deleted"},status=HTTP_200_OK)
         
 class StockListCreate(ListAPIView):
     queryset = Stock.objects.all()
@@ -270,19 +270,16 @@ class StockDetail(APIView):
     def get(self,request,pk):
         inst=self.get_object(pk)
         serializer=StockSerializer(inst)
-        return Response(serializer.data)
+        return Response(serializer.data,status=HTTP_200_OK)
     
     
     def put(self,request,pk):
         pass
     def delete(self,request,pk):
         
-        # inst=self.get_object(pk)
-        # inst.delete()
-        # return Response({"success":True,"message":"successfully deleted"})
-    
-        Stock.objects.all().delete()
-        return Response({"success":True,"message":"deleted"})
+        inst=self.get_object(pk)
+        inst.delete()
+        return Response({"success":True,"message":"deleted"},status=HTTP_200_OK)
     
 
 class DownloadStockHoldings(APIView):
@@ -342,16 +339,25 @@ class StocksInETF(APIView):
         
         if etfname:
             stocks=ETF_holdings.objects.filter(etfname=etfname).distinct().values_list("ticker","name")
-            return Response({"stocks":stocks})
+            return Response({"stocks":stocks},status=HTTP_200_OK)
         
         else:
-            return Response({"success":False,"message":"etf not found"})
+            return Response({"success":False,"message":"etf not found"}, status=HTTP_400_BAD_REQUEST)
             
        
     
             
-            
-            
-            
-    
-
+class FiltersData(APIView):
+    def get(self,request):
+        try:
+            sector=ETF_holdings.objects.filter().values_list("sector",flat=True).distinct()
+          
+            filters={
+                "sector":sector
+            }
+            return Response(filters,status=HTTP_200_OK)
+        except Exception as e:
+            return Response({"success":"false","message":"server error"},status=HTTP_400_BAD_REQUEST)
+           
+        
+ 
