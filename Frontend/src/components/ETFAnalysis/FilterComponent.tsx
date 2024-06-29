@@ -1,11 +1,36 @@
-import React, { useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
+import EtfDetails from './EtfDetails';
+import { etfsDetails } from '../../services/BackendAPIs/ETFs_API';
 const FilterComponent = ({ onFilterChange, onSortChange }) => {
-  const [locationFilter, setLocationFilter] = useState('');
+
   const [selectedSectors, setSelectedSectors] = useState([]);
-  const [sortField, setSortField] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [sortField,setSortField] = useState('');
+  const [filter,setFilter] = useState({etfname:'', startDate:'',endDate:'',location:'',page:1})
+  const [isFilterChanged,setIsFilterChanged] = useState(false)
+  const [error, setError] = useState('null');
+
+  useEffect(() =>{
+    if(isFilterChanged){
+      etfsDetails(filter)
+      .then((data)=>{
+console.log(data);
+
+}).catch((err)=>{
+  setError("An error occurred while fetching ETF data. Please try again later.");
+  console.log(err);
+  alert(error)
+        
+      }).finally(()=>{
+        setIsFilterChanged(false)
+      })
+    }
+  },[isFilterChanged])
+  function handleFilterChange(key, value) {
+    setFilter({ ...filter, [key]: String(value) });
+    setIsFilterChanged(true)
+}
+
+
 
   const sectors = [
     'Information Technology',
@@ -15,23 +40,9 @@ const FilterComponent = ({ onFilterChange, onSortChange }) => {
     // Add more sector options here
   ];
 
-  const handleFilterChange = () => {
-    onFilterChange({ location: locationFilter, sectors: selectedSectors }); // Update parent on filter change
-  };
 
-  const handleLocationChange = (event) => {
-    setLocationFilter(event.target.value);
-    handleFilterChange(); // Trigger filter update on location change
-  };
-
-  const handleSectorChange = (event) => {
-    const selectedSector = event.target.value;
-    const updatedSectors = selectedSectors.includes(selectedSector)
-      ? selectedSectors.filter((sector) => sector !== selectedSector) // Remove if already selected
-      : [...selectedSectors, selectedSector]; // Add if not selected
-    setSelectedSectors(updatedSectors);
-    handleFilterChange(); // Trigger filter update on sector change
-  };
+   
+ 
 
   const handleSortChange = (event) => {
     setSortField(event.target.value);
@@ -51,7 +62,9 @@ const FilterComponent = ({ onFilterChange, onSortChange }) => {
     <div className="filter-container grid grid-cols-5 gap-4"> {/* Use CSS grid for layout */}
       <div className="filter-item">
         <label htmlFor="location">Location:</label>
-        <select id="location" value={locationFilter} onChange={handleLocationChange}>
+        <select id="location" value={filter.location} onChange={(e)=>{
+            handleFilterChange("location",e.target.value);
+        }}>
           <option value="">All</option>
           <option value="USA">USA</option>
           {/* Add more location options here */}
@@ -66,8 +79,11 @@ const FilterComponent = ({ onFilterChange, onSortChange }) => {
                 type="checkbox"
                 id={`sector-${sector}`}
                 value={sector}
+                
                 checked={selectedSectors.includes(sector)}
-                onChange={handleSectorChange}
+                onChange={(e)=>{
+                  handleFilterChange("location",e.target.value);
+              }}
               />
               <label htmlFor={`sector-${sector}`}>{sector}</label>
             </li>
@@ -88,8 +104,10 @@ const FilterComponent = ({ onFilterChange, onSortChange }) => {
         <input
           type="date"
           id="startDate"
-          value={startDate}
-          onChange={(event) => handleDateChange(event, 'start')}
+          value={filter.startDate}
+          onChange={(e)=>{
+            handleFilterChange("startDate",e.target.value);
+        }}
         />
       </div>
       <div className="filter-item">
@@ -97,8 +115,10 @@ const FilterComponent = ({ onFilterChange, onSortChange }) => {
         <input
           type="date"
           id="endDate"
-          value={endDate}
-          onChange={(event) => handleDateChange(event, 'end')}
+          value={filter.endDate}
+          onChange={(e)=>{
+            handleFilterChange("endDate",e.target.value);
+        }}
         />
       </div>
     </div>
