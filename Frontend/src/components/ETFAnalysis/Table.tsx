@@ -1,6 +1,9 @@
 "use client";
 import React, { useState } from 'react';
 import FilterComponent from './FilterComponent';
+import { etfList } from '../../services/BackendAPIs/ETFs_API';
+import { etfsSectors } from '../../services/BackendAPIs/ETFs_API';
+
 // import FilterByDate from './FilterByDate';
 interface TableData {
   ticker: string;
@@ -33,7 +36,7 @@ const Table: React.FC = () => {
     { ticker: 'GOOGL', name: 'ALPHABET INC CLASS A', sector: 'Communication', assetClass: 'Equity', marketValue: '$1,998,454,379.20', weight: '19.24', notionalValue: '1,998,454,379.20', shares: '1,129,568.00', cusip: '02079K305', isin: 'US02079K3059', sedol: 'BYVY8G0', accrualDate: '-' },
     { ticker: 'MSFT', name: 'MICROSOFT CORP', sector: 'Information Technology', assetClass: 'Equity', marketValue: '$1,885,629,408.10', weight: '18.16', notionalValue: '1,885,629,408.10', shares: '6,680,960.00', cusip: '594918104', isin: 'US5949181045', sedol: '2588173', accrualDate: '-' },
     { ticker: 'BABA', name: 'ALIBABA GROUP HOLDING LTD', sector: 'Consumer Discretionary', assetClass: 'Equity', marketValue: '$1,339,726,003.90', weight: '12.90', notionalValue: '1,339,726,003.90', shares: '1,574,220.00', cusip: '01609W102', isin: 'US01609W1027', sedol: 'BK6YZP5', accrualDate: '-' },
-    { ticker: 'TSLA', name: 'TESLA INC', sector: 'Consumer Discretionary', assetClass: 'Equity', marketValue: '$1,010,545,377.60', weight: '9.73', notionalValue: '1,010,545,377.60', shares: '3,222,001.00', cusip: '88160R101', isin: 'US88160R1014', sedol: 'BMT64K2', accrualDate: '-' },
+    { ticker: 'TSLA', name: 'TESLA INC', sector: 'Consumer Discretionary', assetClass: 'Stocks', marketValue: '$1,010,545,377.60', weight: '9.73', notionalValue: '1,010,545,377.60', shares: '3,222,001.00', cusip: '88160R101', isin: 'US88160R1014', sedol: 'BMT64K2', accrualDate: '-' },
     { ticker: 'V', name: 'VISA INC', sector: 'Information Technology', assetClass: 'Equity', marketValue: '$939,111,183.10', weight: '9.05', notionalValue: '939,111,183.10', shares: '2,137,875.00', cusip: '92826C839', isin: 'US92826C8394', sedol: 'B0TNW45', accrualDate: '-' },
   ];
     // Your table data array remains unchanged
@@ -43,6 +46,8 @@ const Table: React.FC = () => {
   const [filter, setFilter] = useState('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+
+
   // const [selectedDate, setSelectedDate] = useState<string>('');
 
   // Calculate total pages based on rowsPerPage
@@ -84,31 +89,36 @@ const Table: React.FC = () => {
     setCurrentPage(1);
   };
 
+  function applyFilters(filter: string): void {
+    throw new Error('Function not implemented.');
+  }
+
   return (
     <div className="flex justify-center items-center h-[100] bg-white ">
       <div className="w-full bg-white shadow-md rounded-lg no-scrollbar  overflow-scroll no-scrollbar" style={{ boxShadow: '1px 14px 6px rgba(0, 0, 0, 0.1)' }}>
         {/* Table header with title and filter */}
         <div className="flex justify-between items-center p-4">
-          <h1 className="text-2xl font-bold">Holdings Table</h1>
+          {/* <h1 className="text-2xl font-bold"> </h1> */}
           <div className="flex space-x-4 text-black">
           <div className="filters">
 
-            <FilterComponent/>
+            <FilterComponent onFilterChange={undefined} onSortChange={undefined} />
           </div>
           <input
           type="text"
-        className="product-textbox clearable p-2"
+        className="product-textbox clearable p-2 h-[30px]"
         placeholder="Filter list by keyword"
         value={filter}
         onChange={handleFilterChange}
       />
+       <button className='h-8 text-[12px] p-2 text-white rounded bg-primary' onClick={() => applyFilters(filter)}>Apply</button>
       
            </div>
         </div>
         
         {/* Table body with scrollable content */}
         <div className="overflow-x-auto overflow-y-auto h-96 shadow-xl">
-          <table className="w-full divide-y divide-grey text-black">
+          <table className="w-full divide-y divide-secondary text-black">
             <thead className="bg-white text-black sticky top-0">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Ticker</th>
@@ -127,7 +137,7 @@ const Table: React.FC = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-300">
               {visibleData.map((data, index) => (
-                <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-grey'}>
+                <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-[#c3e4f2]'}>
                   <td className="px-6 py-4 whitespace-nowrap">{data.ticker}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{data.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{data.sector}</td>

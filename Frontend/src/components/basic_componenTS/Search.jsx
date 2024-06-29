@@ -24,7 +24,7 @@ export default function SearchBox() {
       {/* input */}
       <FontAwesomeIcon
           icon={faSearch}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+          className="absolute right-12 top-1/2 transform -translate-y-1/2 text-gray-500"
         />
         <input
           type="search"
