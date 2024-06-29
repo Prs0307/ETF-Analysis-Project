@@ -1,15 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import EtfDetails from './EtfDetails';
 import { etfsDetails } from '../../services/BackendAPIs/ETFs_API';
+import { etfsSectors } from '../../services/BackendAPIs/ETFs_API';
 const FilterComponent = ({ onFilterChange, onSortChange }) => {
-
-  const [selectedSectors, setSelectedSectors] = useState([]);
   const [sortField,setSortField] = useState('');
-  const [filter,setFilter] = useState({etfname:'', startDate:'',endDate:'',location:'',page:1})
+  const [filter,setFilter] = useState({etfname:'',sectors:'', startDate:'',endDate:'',location:'',page:1})
   const [isFilterChanged,setIsFilterChanged] = useState(false)
   const [error, setError] = useState('null');
+  const [sectors,setSectors]=useState([])
+  const [selectedSector, setSelectedSector] = useState('');
+  const [isSectorChanged, setIsSectorChanged] = useState(false);
+  const handleRadioChange = (event) => {
+    // const { checked, value } = event.target;
+    setSelectedSector(event.target.value);
+    setIsSectorChanged(true);
+    console.log(selectedSector);
+  }
 
+  useEffect(()=>{
+    etfsSectors()
+    .then((data)=>{
+      if(data.sector)
+        {
+          
+      setSectors(data.sector.slice(0, 3));
+
+        }
+      console.log(data)
+    })
+    .catch((err)=>{
+      setError("An error occurred while fetching ETF data. Please try again later.");
+      console.log(err);
+      alert(error)
+  })
+  },[])
   useEffect(() =>{
+    
     if(isFilterChanged){
       etfsDetails(filter)
       .then((data)=>{
@@ -22,6 +48,7 @@ console.log(data);
         
       }).finally(()=>{
         setIsFilterChanged(false)
+
       })
     }
   },[isFilterChanged])
@@ -29,16 +56,6 @@ console.log(data);
     setFilter({ ...filter, [key]: String(value) });
     setIsFilterChanged(true)
 }
-
-
-
-  const sectors = [
-    'Information Technology',
-    'Health',
-    'Industrials',
-    'Financials',
-    // Add more sector options here
-  ];
 
 
    
@@ -49,14 +66,14 @@ console.log(data);
     onSortChange(event.target.value); // Update parent on sort change
   };
 
-  const handleDateChange = (event, dateType) => { // Reusable function for date pickers
-    if (dateType === 'start') {
-      setStartDate(event.target.value);
-    } else if (dateType === 'end') {
-      setEndDate(event.target.value);
-    }
-    // You might want to add validation or processing here
-  };
+  // const handleDateChange = (event, dateType) => { // Reusable function for date pickers
+  //   if (dateType === 'start') {
+  //     setStartDate(event.target.value);
+  //   } else if (dateType === 'end') {
+  //     setEndDate(event.target.value);
+  //   }
+  //   // You might want to add validation or processing here
+  // };
 
   return (
     <div className="filter-container grid grid-cols-5 gap-4"> {/* Use CSS grid for layout */}
@@ -76,14 +93,13 @@ console.log(data);
           {sectors.map((sector) => (
             <li key={sector}>
               <input
-                type="checkbox"
+                type="radio"
                 id={`sector-${sector}`}
                 value={sector}
-                
-                checked={selectedSectors.includes(sector)}
-                onChange={(e)=>{
-                  handleFilterChange("location",e.target.value);
-              }}
+                name="selectedSector" // Shared name for radio buttons
+                checked={selectedSector === sector} // Check if current sector matches selected one
+                // checked={selectedSector.includes(sector)}
+                onChange={handleRadioChange}
               />
               <label htmlFor={`sector-${sector}`}>{sector}</label>
             </li>

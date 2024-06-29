@@ -36,3 +36,18 @@ export const etfsDetails = async (query_params) => {
         throw new Error('Server error: ' + error.message);
     }
 }
+
+
+// const BASE_URL='http://127.0.0.1:8000/services/'
+
+export const  etfsSectors=  async ()=> {
+   
+    try {
+        const response = await fetch(BASE_URL + 'filters/');
+        const jsonResponse = await response.json();
+        return jsonResponse;
+    } catch (error) {
+        console.log(error);
+        throw new Error('Server error: ' + error.message);
+    }
+}

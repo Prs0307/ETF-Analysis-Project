@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import FilterComponent from './FilterComponent';
 import { etfList } from '../../services/BackendAPIs/ETFs_API';
+import { etfsSectors } from '../../services/BackendAPIs/ETFs_API';
+
 // import FilterByDate from './FilterByDate';
 interface TableData {
   ticker: string;
@@ -44,6 +46,8 @@ const Table: React.FC = () => {
   const [filter, setFilter] = useState('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(5);
+
+
   // const [selectedDate, setSelectedDate] = useState<string>('');
 
   // Calculate total pages based on rowsPerPage
@@ -98,7 +102,7 @@ const Table: React.FC = () => {
           <div className="flex space-x-4 text-black">
           <div className="filters">
 
-            <FilterComponent/>
+            <FilterComponent onFilterChange={undefined} onSortChange={undefined} />
           </div>
           <input
           type="text"
