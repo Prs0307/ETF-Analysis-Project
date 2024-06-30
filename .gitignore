@@ -4,7 +4,7 @@ env
 .myenv
 .venv.json
 .env.json
-.Backend/venv
+venv
 # Logs
 logs
 *.log
