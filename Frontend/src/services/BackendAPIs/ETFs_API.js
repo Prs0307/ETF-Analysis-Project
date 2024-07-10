@@ -20,13 +20,13 @@ export const etfsDetails = async (query_params) => {
 
     for (const [key, value] of Object.entries(query_params)) {
         if (value != null && value !== "") {
-            queryString += `${encodeURIComponent(key)}=${encodeURIComponent(value)}&`;
+            queryString += `${key}=${value}&`;
         }
     }
     
     // Remove the trailing '&' if present
     queryString = queryString.endsWith("&") ? queryString.slice(0, -1) : queryString;
-
+    console.log("QUery: "+queryString);
     try {
         const response = await fetch(BASE_URL + 'update-etfstocks/' + queryString);
         const jsonResponse = await response.json();

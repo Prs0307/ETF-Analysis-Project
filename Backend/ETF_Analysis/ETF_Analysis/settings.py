@@ -53,7 +53,8 @@ INSTALLED_APPS = [
 MY_APPS=[
     "account_services",
     "ETF_services",
-    "utils"
+    "utils",
+    "prediction_models",
 ]
 
 INSTALLED_APPS=INSTALLED_APPS+MY_APPS

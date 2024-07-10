@@ -1,9 +1,16 @@
 "use client";
-import React, { useState } from 'react';
-import { etfList } from '../../services/BackendAPIs/ETFs_API';
+import React, { useState,useEffect } from 'react';
+import { etfsDetails } from '../../services/BackendAPIs/ETFs_API';
 import { etfsSectors } from '../../services/BackendAPIs/ETFs_API';
 
+
+
+
 // import FilterByDate from './FilterByDate';
+interface TableProps {
+  data: { results: unknown[] } | null; // Interface for data prop
+}
+
 interface TableData {
   ticker: string;
   name: string;
@@ -20,11 +27,21 @@ interface TableData {
 }
 
 const Table: React.FC = ({ data }) => {
+  const [sortField,setSortField] = useState('');
+  const [filter,setFilter] = useState({etfname:'',sector:'', startDate:'',endDate:'',page:1})
+  const [isFilterChanged,setIsFilterChanged] = useState(true)
+  const [error, setError] = useState('null');
+  const [sectors,setSectors]=useState([])
+  const [selectedSector, setSelectedSector] = useState('');
+  const [isSectorChanged, setIsSectorChanged] = useState(false);
+  
+
   
   return (
     <div>
       {data ? (
-        <div className="flex justify-center items-center h-[100] bg-white ">
+       <div>
+         <div className="flex justify-center items-center h-[100] bg-white ">
            <div className="overflow-x-auto overflow-y-auto h-96 shadow-xl">
           <table className="w-full divide-y divide-secondary text-black">
             <thead className="bg-white text-black sticky top-0">
@@ -69,9 +86,24 @@ const Table: React.FC = ({ data }) => {
             </tbody>
           </table>
     </div>
+    
    
     
         </div>
+        <div className='flex justify-between my-4 py-9'>
+          <div className="mr-32">
+    <button className="px-4 py-2 rounded-md bg-primary text-white hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:bg-gray-400 disabled:cursor-not-allowed">
+     
+    &larr;  Prev
+    </button>
+  </div>
+  <div className="ml-32">
+    <button className="px-4 py-2 rounded-md bg-primary text-white hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:bg-gray-400 disabled:cursor-not-allowed" >
+      Next &rarr;
+    </button>
+  </div>
+        </div>
+       </div>
       ) : (
         <h1 className="text-center text-3xl">Loading...</h1>
       )}

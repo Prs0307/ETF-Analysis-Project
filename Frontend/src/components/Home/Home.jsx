@@ -3,6 +3,7 @@
 import { Link } from 'react-router-dom';
 import SearchBox from '../basic_componenTS/Search';
 import CardApp from '../Cards/CardApp';
+import ScatterPlot from '../ETFAnalysis/Plots';
 export default function Home() {
     return (
         <div className="mx-auto w-full max-w-7xl px-1 py-2 min-h-screen">
@@ -20,6 +21,9 @@ export default function Home() {
                    </div>
                 </div>
                 <div>  <CardApp />{/* Display your card component */}</div>
+            </div>
+            <div>
+            <ScatterPlot/>
             </div>
         </div>
     </div>

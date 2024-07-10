@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import EtfDetails from './EtfDetails';
 import { etfsDetails } from '../../services/BackendAPIs/ETFs_API';
 import { etfsSectors } from '../../services/BackendAPIs/ETFs_API';
-const FilterComponent = ({ onFilterChange, onSortChange }) => {
+const FilterComponent = ({ data, setTableData }) => {
+  const [currentPage,setCurrentPage]=useState(1);
   const [sortField,setSortField] = useState('');
-  const [filter,setFilter] = useState({etfname:'',sectors:'', startDate:'',endDate:'',location:'',page:1})
-  const [isFilterChanged,setIsFilterChanged] = useState(false)
+  const [filter,setFilter] = useState({etfname:'',sector:'', startDate:'',endDate:'',page:currentPage})
+  const [isFilterChanged,setIsFilterChanged] = useState(true)
   const [error, setError] = useState('null');
   const [sectors,setSectors]=useState([])
   const [selectedSector, setSelectedSector] = useState('');
@@ -14,10 +15,13 @@ const FilterComponent = ({ onFilterChange, onSortChange }) => {
     // const { checked, value } = event.target;
     setSelectedSector(event.target.value);
     setIsSectorChanged(true);
+    setFilter({...filter, sector: event.target.value});
+    setIsFilterChanged(true);
     console.log(selectedSector);
   }
 
   useEffect(()=>{
+
     etfsSectors()
     .then((data)=>{
       if(data.sector)
@@ -34,11 +38,16 @@ const FilterComponent = ({ onFilterChange, onSortChange }) => {
       alert(error)
   })
   },[])
+
+  
   useEffect(() =>{
-    
     if(isFilterChanged){
       etfsDetails(filter)
       .then((data)=>{
+        console.log(data);
+        if(data)
+        setTableData(data);
+
 console.log(data);
 
 }).catch((err)=>{
@@ -50,21 +59,43 @@ console.log(data);
         setIsFilterChanged(false)
 
       })
-    }
-  },[isFilterChanged])
+    
+}},[isFilterChanged])
   function handleFilterChange(key, value) {
     setFilter({ ...filter, [key]: String(value) });
     setIsFilterChanged(true)
 }
 
 
-   
+const [rowsPerPage, setRowsPerPage] = useState(20);
+function onHandlePrev(e){
+  console.log("Previous Table\n");
+  if (currentPage>1) {
+    
+    setCurrentPage(currentPage-1)
+  }else
+  alert("You are on first page\n");
+}
+function onHandleNext(e){
+  console.log("Next data clickes Table\n");
+  const totalPages=data["total_pages"]
+  
+  if (currentPage<totalPages) {
+    
+  setCurrentPage(currentPage+1)
+  setIsFilterChanged(true)
+  }
+  else
+  {
+    alert("You are Already on Last page\n");
+  }
+}
  
 
-  const handleSortChange = (event) => {
-    setSortField(event.target.value);
-    onSortChange(event.target.value); // Update parent on sort change
-  };
+  // const handleSortChange = (event) => {
+  //   setSortField(event.target.value);
+  //   onSortChange(event.target.value); // Update parent on sort change
+  // };
 
   // const handleDateChange = (event, dateType) => { // Reusable function for date pickers
   //   if (dateType === 'start') {
@@ -74,14 +105,13 @@ console.log(data);
   //   }
   //   // You might want to add validation or processing here
   // };
+  
 
   return (
     <div className="filter-container grid grid-cols-5 gap-4"> {/* Use CSS grid for layout */}
       <div className="filter-item">
         <label htmlFor="location">Location:</label>
-        <select id="location" value={filter.location} onChange={(e)=>{
-            handleFilterChange("location",e.target.value);
-        }}>
+        <select id="location" >
           <option value="">All</option>
           <option value="USA">USA</option>
           {/* Add more location options here */}
@@ -108,7 +138,7 @@ console.log(data);
       </div>
       <div className="filter-item">
         <label htmlFor="sort">Sort by:</label>
-        <select id="sort" value={sortField} onChange={handleSortChange}>
+        <select id="sort" value={sortField}>
           <option value="">None</option>
           <option value="shares">Shares</option>
           <option value="marketValue">Market Value</option>
@@ -135,8 +165,11 @@ console.log(data);
           onChange={(e)=>{
             handleFilterChange("endDate",e.target.value);
         }}
+
         />
+        <button onClick={onHandleNext}>Next</button>
       </div>
+      
     </div>
   );
 };
