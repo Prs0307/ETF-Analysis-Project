@@ -8,7 +8,6 @@ from rest_framework.generics import ListAPIView
 import csv
 from django.http import JsonResponse
 from .models import *
-from .analysis import *
 from django.http import HttpResponse
 from django.db import transaction, IntegrityError
 from .serializers import *
@@ -360,13 +359,5 @@ class FiltersData(APIView):
         except Exception as e:
             return Response({"success":"false","message":"server error"},status=HTTP_400_BAD_REQUEST)
 
-
-def predict(request):
-    df = ETF_holdings.objects.all().values()
-    df = pd.DataFrame(df)
-    print(df.info())
-    holding_analysis_details(df,'ILF')
-
-    return HttpResponse('Done')           
         
  

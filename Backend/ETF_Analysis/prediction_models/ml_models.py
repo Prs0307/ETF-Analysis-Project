@@ -6,7 +6,7 @@ import locale
 from locale import atof
 
 
-def holding_analysis(df, etfname, holding_name):  # function for holding analysis
+def holding_analysis(df, etfname, holding_name):  # function for holding analysis [weight vs date ]
 
     temp = df[df['etfname'] == etfname]
     main = temp[temp['ticker'] == holding_name]
@@ -28,7 +28,7 @@ def holding_analysis(df, etfname, holding_name):  # function for holding analysi
     return temp
 
 
-def holding_analysis1(df, etfname, holding_name):  # function for holding analysis
+def holding_analysis1(df, etfname, holding_name):  # function for holding analysis Future Price 
 
     temp = df[df['etfname'] == etfname]
     main = temp[temp['ticker'] == holding_name]
@@ -50,7 +50,7 @@ def holding_analysis1(df, etfname, holding_name):  # function for holding analys
 
     return p_price
 
-def holding_analysis_details(df,etfname):
+def holding_analysis_details(df,etfname): #1+2
     newdf=pd.DataFrame({
     'holding':[],
     'date':[],

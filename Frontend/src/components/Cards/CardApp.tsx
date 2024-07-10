@@ -4,7 +4,7 @@ import Card from './card';
 const App = () => {
   const cardsData = [
     { 
-      title: 'Acme Plus', 
+      title: 'Nvidea', 
       sales: 24780, 
       percentage: 49, 
       trend: [

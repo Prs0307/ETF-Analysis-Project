@@ -4,43 +4,39 @@ import { useParams } from "react-router-dom"
 import Table from "./Table"
 import FilterComponent from './FilterComponent';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import { useState,useEffect } from "react"
 import { etfsDetails } from "../../services/BackendAPIs/ETFs_API"
 import { faArrowLeft, fas, faSearch } from "@fortawesome/free-solid-svg-icons";
+import ScatterPlot from "./Plots";
 function EtfDetails() {
   const {id}=useParams() //{ } object with 65
   const [data,setTableData]=useState();
+  
   const[filterData,setFilterData]=useState();
   const [filter, setFilter] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(20);
-  const etfsData= async ()=> {
-    try {
-        const response = await fetch(`http://127.0.0.1:8000/services/update-etfstocks/?etfname=${id}&page=${currentPage}`)
-        const jsonResponse = await response.json();
-      return jsonResponse;
-    } catch (error) {
-      alert(error);
-      console.log(error);
+
+
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+//   const etfsData= async ()=> {
+//     try {
+//         const response = await fetch(`http://127.0.0.1:8000/services/update-etfstocks/?etfname=${id}&page=${currentPage}`)
+//         const jsonResponse = await response.json();
+//       return jsonResponse;
+//     } catch (error) {
+//       alert(error);
+//       console.log(error);
         
-    }
-};
-  useEffect(() => {
-    etfsData().then((res)=>{
-      console.log("etfs data-> Table\n");
-      // console.log(res);
-      setTableData(res);
-    })
-  },[data]);
-  function onHandlePrev(e){
-    console.log("Previous Table\n");
-    setCurrentPage(currentPage-1)
-  }
-  function onHandleNext(e){
-    console.log("Next data clickes Table\n");
-    setCurrentPage(currentPage+1)
-  }
+//     }
+// };
+  // useEffect(() => {
+  //   etfsData().then((res)=>{
+  //     console.log("etfs data-> Table\n");
+  //     // console.log(res);
+  //     setTableData(res);
+  //   })
+  // },[data,etfsData,currentPage]);
+ 
   
   return (
     <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-4">
@@ -53,7 +49,7 @@ function EtfDetails() {
           <div className="flex space-x-4 text-black">
           <div className="filters">
 
-            <FilterComponent onFilterChange={undefined} onSortChange={undefined} />
+            <FilterComponent data={data} setTableData={setTableData}  />
           </div>
           <input
           type="text"
@@ -69,22 +65,16 @@ function EtfDetails() {
         <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
         <Table data={data}/>
         <div className="flex justify-center p-12 items-center">
-  <div className="mr-32">
-    <button className=" px-4 py-2 rounded-md bg-primary text-white hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:bg-gray-400 disabled:cursor-not-allowed" onClick={onHandlePrev}>
-     
-    &larr;  Prev
-    </button>
-  </div>
-  <div className="ml-32">
-    <button className="px-4 py-2 rounded-md bg-primary text-white hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:bg-gray-400 disabled:cursor-not-allowed" onClick={onHandleNext}>
-      Next &rarr;
-    </button>
-  </div>
+
+
 </div>
 
         </div>
         <div className="text-center text-primary text-4xl p-10 font-semibold justify-center">
-          ...
+          {/* Rechart Piechart */}
+         {/* two select box for Pie Chart  to select Top 50 Holdings or last 50 Holdings from etf on the basis of three selector 1Share 2Price 3Weight */}
+         <h1>Plot</h1>
+         
         </div>
       </section>
       <section id="Pagination" className="mt-6">
