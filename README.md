@@ -108,7 +108,7 @@ This README guides you through setting up the development environment for your D
     * Follow your React project's specific development instructions for codebase exploration and functionalities.
     * Refer to the official React documentation for in-depth learning: https://legacy.reactjs.org/
 
-## Additional Considerations
+## Additional Considerations..
 
 * This is a starting point. Explore both Django and React documentation for comprehensive learning and troubleshooting.
 
